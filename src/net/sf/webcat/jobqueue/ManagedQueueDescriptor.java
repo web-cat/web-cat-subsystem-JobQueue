@@ -24,6 +24,7 @@ package net.sf.webcat.jobqueue;
 import com.webobjects.eoaccess.*;
 import com.webobjects.eocontrol.*;
 import com.webobjects.foundation.*;
+import er.extensions.eof.ERXConstant;
 
 import java.util.Enumeration;
 import org.apache.log4j.Logger;
@@ -246,7 +247,7 @@ public class ManagedQueueDescriptor
     public void setRequiresExclusiveHostAccess(boolean value)
     {
         takeValueForKey(
-            er.extensions.ERXConstant.integerForInt(value ? 1 : 0),
+            ERXConstant.integerForInt(value ? 1 : 0),
             QueueDescriptor.REQUIRES_EXCLUSIVE_HOST_ACCESS_KEY);
     }
 
