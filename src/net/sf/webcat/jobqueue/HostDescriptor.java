@@ -21,6 +21,7 @@
 
 package net.sf.webcat.jobqueue;
 
+import net.sf.webcat.core.Application;
 import com.webobjects.eocontrol.*;
 import com.webobjects.foundation.*;
 
@@ -44,6 +45,41 @@ public class HostDescriptor
     public HostDescriptor()
     {
         super();
+    }
+
+
+    // ----------------------------------------------------------
+    /**
+     * Registers a host in the database, if it has not already been
+     * registered.
+     * @param context The editing context to use.
+     * @param hostName The name of the host.
+     * @return The registered descriptor.
+     */
+    public static HostDescriptor registerHost(
+        EOEditingContext context, String hostName)
+    {
+        return (HostDescriptor)JobQueue.registerDescriptor(
+            context,
+            ENTITY_NAME,
+            new NSDictionary<String, String>(
+                hostName,
+                HOST_NAME_KEY),
+            null);
+    }
+
+
+    // ----------------------------------------------------------
+    /**
+     * Registers a host in the database, if it has not already been
+     * registered.
+     * @param hostName The name of the host.
+     */
+    public static void registerHost(String hostName)
+    {
+        EOEditingContext ec = Application.newPeerEditingContext();
+        registerHost(ec, hostName);
+        Application.releasePeerEditingContext(ec);
     }
 
 
