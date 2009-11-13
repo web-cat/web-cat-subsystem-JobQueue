@@ -1,7 +1,7 @@
 /*==========================================================================*\
  |  $Id$
  |*-------------------------------------------------------------------------*|
- |  Copyright (C) 2006 Virginia Tech
+ |  Copyright (C) 2008-2009 Virginia Tech
  |
  |  This file is part of Web-CAT.
  |
@@ -30,8 +30,9 @@ import com.webobjects.foundation.*;
  * Represents and identifies a Web-CAT host within the cluster of
  * servers operating on a single shared database.
  *
- * @author
- * @version $Id$
+ * @author Stephen Edwards
+ * @author Last changed by $Author$
+ * @version $Revision$, $Date$
  */
 public class HostDescriptor
     extends _HostDescriptor
@@ -78,13 +79,6 @@ public class HostDescriptor
 
 
     //~ Methods ...............................................................
-
-    // ----------------------------------------------------------
-    public String toString()
-    {
-        return userPresentableDescription();
-    }
-
 
     // ----------------------------------------------------------
     /**

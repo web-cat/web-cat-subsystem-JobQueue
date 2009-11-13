@@ -1,7 +1,7 @@
 /*==========================================================================*\
  |  $Id$
  |*-------------------------------------------------------------------------*|
- |  Copyright (C) 2006-2008 Virginia Tech
+ |  Copyright (C) 2008-2009 Virginia Tech
  |
  |  This file is part of Web-CAT.
  |
@@ -30,7 +30,8 @@ package net.sf.webcat.jobqueue;
  * @param <Worker> The kind of worker that this pool manages.
  *
  * @author Stephen Edwards
- * @version $Id$
+ * @author Last changed by $Author$
+ * @version $Revision$, $Date$
  */
 public class WorkerPool<Job extends JobBase, Worker extends WorkerThread<Job>>
 {

@@ -1,7 +1,7 @@
 /*==========================================================================*\
  |  $Id$
  |*-------------------------------------------------------------------------*|
- |  Copyright (C) 2006 Virginia Tech
+ |  Copyright (C) 2008-2009 Virginia Tech
  |
  |  This file is part of Web-CAT.
  |
@@ -36,8 +36,9 @@ import net.sf.webcat.core.Application;
  * servers then operate on the same shared queue of jobs stored in the
  * database.
  *
- * @author
- * @version $Id$
+ * @author Stephen Edwards
+ * @author Last changed by $Author$
+ * @version $Revision$, $Date$
  */
 public class QueueDescriptor
     extends _QueueDescriptor
@@ -113,10 +114,4 @@ public class QueueDescriptor
 
 
     //~ Methods ...............................................................
-
-    // ----------------------------------------------------------
-    public String toString()
-    {
-        return userPresentableDescription();
-    }
 }

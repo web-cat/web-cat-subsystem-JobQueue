@@ -1,7 +1,7 @@
 /*==========================================================================*\
  |  $Id$
  |*-------------------------------------------------------------------------*|
- |  Copyright (C) 2006-2008 Virginia Tech
+ |  Copyright (C) 2009-2009 Virginia Tech
  |
  |  This file is part of Web-CAT.
  |
@@ -39,7 +39,8 @@ import net.sf.webcat.core.Application;
  *     works on.
  *
  * @author Stephen Edwards
- * @version $Id$
+ * @author Last changed by $Author$
+ * @version $Revision$, $Date$
  */
 public abstract class WorkerThread<Job extends JobBase>
     extends Thread
@@ -49,12 +50,17 @@ public abstract class WorkerThread<Job extends JobBase>
     // ----------------------------------------------------------
     /**
      * Creates a new object.
-     * @param workerDescriptor the descriptor for this worker thread
+     * @param queueEntity The name of the entity representing the job
+     * queue for this worker thread.
      */
-    public WorkerThread(WorkerDescriptor workerDescriptor)
+    public WorkerThread(String queueEntity)
     {
         descriptor = new ManagedWorkerDescriptor(
-            workerDescriptor.localInstance(localContext()));
+            WorkerDescriptor.registerWorker(
+                localContext(),
+                HostDescriptor.currentHost(localContext()),
+                QueueDescriptor.descriptorFor(localContext(), queueEntity),
+                this));
     }
 
 

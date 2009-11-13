@@ -1,7 +1,7 @@
 /*==========================================================================*\
  |  $Id$
  |*-------------------------------------------------------------------------*|
- |  Copyright (C) 2008 Virginia Tech
+ |  Copyright (C) 2008-2009 Virginia Tech
  |
  |  This file is part of Web-CAT.
  |
@@ -32,8 +32,9 @@ import net.sf.webcat.core.IndependentEOManager;
 /**
  * A subclass of IndependentEOManager that holds one {@link HostDescriptor}.
  *
- * @author stedwar2
- * @version $Id$
+ * @author Stephen Edwards
+ * @author Last changed by $Author$
+ * @version $Revision$, $Date$
  */
 public class ManagedHostDescriptor
     extends IndependentEOManager
