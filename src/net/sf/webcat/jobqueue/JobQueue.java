@@ -64,34 +64,9 @@ public class JobQueue
     {
         super.init();
 
-        if (initialized)
-        {
-            log.error(
-                "JobQueue subsystem has already been initialized!",
-                new Throwable("called here"));
-            return;
-        }
-
-        try
-        {
-            java.net.InetAddress localMachine =
-                java.net.InetAddress.getLocalHost();
-            canonicalHostName = localMachine.getCanonicalHostName();
-        }
-        catch (java.net.UnknownHostException e)
-        {
-            log.error("Error looking up local host info: " + e);
-        }
-        log.info("canonical host name = " + canonicalHostName);
-
-        // Register this host's descriptor
-        EOEditingContext ec = Application.newPeerEditingContext();
-        host = HostDescriptor.registerHost(ec, canonicalHostName);
-        // Don't destroy the EO, since we want to keep the descriptor
-        // around as long as is needed.
-
-        log.info("host descriptor = " + host);
-
+        HostDescriptor.ensureCurrentHostIsRegistered();
+        log.info(
+            "canonical host name = " + HostDescriptor.canonicalHostName());
         initialized = true;
     }
 
@@ -383,16 +358,6 @@ public class JobQueue
     }
 
 
-    // ----------------------------------------------------------
-    /**
-     * Get a local copy of the host descriptor for the current host
-     */
-    public static HostDescriptor host(EOEditingContext context)
-    {
-        return host.localInstance(context);
-    }
-
-
     //~ Private Methods .......................................................
 
     // ----------------------------------------------------------
@@ -410,9 +375,7 @@ public class JobQueue
 
     //~ Instance/static variables .............................................
 
-    private static boolean        initialized = false;
-    private static HostDescriptor host;
-    private static String         canonicalHostName = "unknown";
+    private static boolean initialized = false;
 
     static Logger log = Logger.getLogger(JobQueue.class);
 }

@@ -57,13 +57,13 @@ public class QueueDescriptor
     // ----------------------------------------------------------
     /**
      * Registers a queue in the database, if it has not already been
-     * registered.
+     * registered, and returns the associated descriptor.
      * @param context The editing context to use.
      * @param jobEntityName The name of the {@link JobBase} subclass used
      *        to hold the queue's contents in the database.
      * @return The registered descriptor.
      */
-    public static QueueDescriptor registerQueue(
+    public static QueueDescriptor descriptorFor(
         EOEditingContext context, String jobEntityName)
     {
         return (QueueDescriptor)JobQueue.registerDescriptor(
@@ -80,6 +80,25 @@ public class QueueDescriptor
 
     // ----------------------------------------------------------
     /**
+     * Retrieve a managed descriptor for a given job queue, registering
+     * the queue if necessary.
+     * @param jobEntityName The name of the {@link JobBase} subclass used
+     *        to hold the queue's contents in the database.
+     * @return The managed descriptor.
+     */
+    public static ManagedQueueDescriptor managedDescriptorFor(
+        String jobEntityName)
+    {
+        EOEditingContext ec = Application.newPeerEditingContext();
+        ManagedQueueDescriptor result = new ManagedQueueDescriptor(
+            descriptorFor(ec, jobEntityName));
+        Application.releasePeerEditingContext(ec);
+        return result;
+    }
+
+
+    // ----------------------------------------------------------
+    /**
      * Registers a queue in the database, if it has not already been
      * registered.
      * @param jobEntityName The name of the {@link JobBase} subclass used
@@ -88,7 +107,7 @@ public class QueueDescriptor
     public static void registerQueue(String jobEntityName)
     {
         EOEditingContext ec = Application.newPeerEditingContext();
-        registerQueue(ec, jobEntityName);
+        descriptorFor(ec, jobEntityName);
         Application.releasePeerEditingContext(ec);
     }
 
