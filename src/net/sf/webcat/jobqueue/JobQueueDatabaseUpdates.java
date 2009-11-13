@@ -69,6 +69,22 @@ public class JobQueueDatabaseUpdates
 
     // ----------------------------------------------------------
     /**
+     * Revise structure of the worker descriptor table.
+     * @throws SQLException on error
+     */
+    public void updateIncrement1() throws SQLException
+    {
+        database().executeSQL(
+            "ALTER TABLE TWorkerDescriptor DROP isAllocated" );
+        database().executeSQL(
+            "ALTER TABLE TWorkerDescriptor DROP idOnHost" );
+        database().executeSQL(
+        "ALTER TABLE TWorkerDescriptor ADD currentJobId INTEGER" );
+    }
+
+
+    // ----------------------------------------------------------
+    /**
      * Create the common columns inherited by all job tables, if needed.
      * This method is intended to be used in other database updaters that
      * own tables containing subclasses of {@link JobBase}.  With

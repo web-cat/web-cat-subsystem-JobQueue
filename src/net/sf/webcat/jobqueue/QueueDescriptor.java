@@ -95,4 +95,9 @@ public class QueueDescriptor
 
     //~ Methods ...............................................................
 
+    // ----------------------------------------------------------
+    public String toString()
+    {
+        return userPresentableDescription();
+    }
 }

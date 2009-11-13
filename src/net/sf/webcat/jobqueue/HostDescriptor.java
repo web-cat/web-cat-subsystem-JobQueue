@@ -85,4 +85,9 @@ public class HostDescriptor
 
     //~ Methods ...............................................................
 
+    // ----------------------------------------------------------
+    public String toString()
+    {
+        return userPresentableDescription();
+    }
 }

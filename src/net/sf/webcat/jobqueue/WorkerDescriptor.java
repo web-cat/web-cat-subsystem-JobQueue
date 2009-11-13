@@ -21,8 +21,12 @@
 
 package net.sf.webcat.jobqueue;
 
+import net.sf.webcat.core.Application;
 import com.webobjects.eocontrol.*;
 import com.webobjects.foundation.*;
+import er.extensions.eof.ERXConstant;
+import er.extensions.foundation.ERXUtilities;
+import er.extensions.foundation.ERXValueUtilities;
 
 // -------------------------------------------------------------------------
 /**
@@ -49,6 +53,33 @@ public class WorkerDescriptor
     }
 
 
+    // ----------------------------------------------------------
+    /**
+     * Registers a worker thread in the database, if it has not already been
+     * registered.
+     * @param context The editing context to use.
+     * @param host The host on which this thread lives.
+     * @param queue The queue on which this thread operates.
+     * @return The registered descriptor.
+     */
+    public static WorkerDescriptor registerWorker(
+        EOEditingContext context,
+        HostDescriptor host,
+        QueueDescriptor queue)
+    {
+        return (WorkerDescriptor)JobQueue.registerFirstAvailableDescriptor(
+                context,
+                ENTITY_NAME,
+                new NSDictionary<String, Object>(
+                    new Object[] { host, queue, ERXConstant.ZeroInteger },
+                    new String[] { HOST_KEY, QUEUE_KEY, IS_ALIVE_KEY }
+                    ),
+                null,
+                new NSDictionary<String, Object>(
+                    ERXConstant.OneInteger, IS_ALIVE_KEY));
+    }
+
+
     //~ Methods ...............................................................
 
     // ----------------------------------------------------------
@@ -62,5 +93,12 @@ public class WorkerDescriptor
     {
         // TODO: implement this!
         return false;
+    }
+
+
+    // ----------------------------------------------------------
+    public String toString()
+    {
+        return userPresentableDescription();
     }
 }

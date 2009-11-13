@@ -95,6 +95,13 @@ public abstract class JobBase
     }
 
 
+    // ----------------------------------------------------------
+    public String toString()
+    {
+        return userPresentableDescription();
+    }
+
+
     //~ Protected Methods .....................................................
 
 }

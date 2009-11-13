@@ -59,40 +59,40 @@ public  class ManagedWorkerDescriptor
      * Retrieve this object's <code>idOnHost</code> value.
      * @return the value of the attribute
      */
-    public int idOnHost()
+    public long currentJobId()
     {
         Number result =
-            (Number)valueForKey(WorkerDescriptor.ID_ON_HOST_KEY);
+            (Number)valueForKey(WorkerDescriptor.CURRENT_JOB_ID_KEY);
         return (result == null)
-            ? 0
-            : result.intValue();
+            ? 0L
+            : result.longValue();
     }
 
 
     // ----------------------------------------------------------
     /**
-     * Change the value of this object's <code>idOnHost</code>
+     * Change the value of this object's <code>currentJobId</code>
      * property.
      *
      * @param value The new value for this property
      */
-    public void setIdOnHost(int value)
+    public void setIdOnHost(long value)
     {
         takeValueForKey(
-            ERXConstant.integerForInt( value ),
-            WorkerDescriptor.ID_ON_HOST_KEY);
+            new Long(value),
+            WorkerDescriptor.CURRENT_JOB_ID_KEY);
     }
 
 
     // ----------------------------------------------------------
     /**
-     * Retrieve this object's <code>isAllocated</code> value.
+     * Retrieve this object's <code>isAlive</code> value.
      * @return the value of the attribute
      */
-    public boolean isAllocated()
+    public boolean isAlive()
     {
         Number result =
-            (Number)valueForKey(WorkerDescriptor.IS_ALLOCATED_KEY);
+            (Number)valueForKey(WorkerDescriptor.IS_ALIVE_KEY);
         return (result == null)
             ? false
             : (result.intValue() > 0);
@@ -101,46 +101,16 @@ public  class ManagedWorkerDescriptor
 
     // ----------------------------------------------------------
     /**
-     * Change the value of this object's <code>isAllocated</code>
+     * Change the value of this object's <code>isAlive</code>
      * property.
      *
      * @param value The new value for this property
      */
-    public void setIsAllocated(boolean value)
+    public void setIsAlive(boolean value)
     {
         takeValueForKey(
             ERXConstant.integerForInt(value ? 1 : 0),
-            WorkerDescriptor.IS_ALLOCATED_KEY);
-    }
-
-
-    // ----------------------------------------------------------
-    /**
-     * Retrieve this object's <code>isRunning</code> value.
-     * @return the value of the attribute
-     */
-    public boolean isRunning()
-    {
-        Number result =
-            (Number)valueForKey(WorkerDescriptor.IS_RUNNING_KEY);
-        return (result == null)
-            ? false
-            : (result.intValue() > 0);
-    }
-
-
-    // ----------------------------------------------------------
-    /**
-     * Change the value of this object's <code>isRunning</code>
-     * property.
-     *
-     * @param value The new value for this property
-     */
-    public void setIsRunning(boolean value)
-    {
-        takeValueForKey(
-            ERXConstant.integerForInt(value ? 1 : 0),
-            WorkerDescriptor.IS_RUNNING_KEY);
+            WorkerDescriptor.IS_ALIVE_KEY);
     }
 
 
