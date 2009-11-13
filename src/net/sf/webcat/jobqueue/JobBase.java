@@ -79,19 +79,42 @@ public abstract class JobBase
         {
             return false;
         }
+
         if (worker() == null)
         {
             try
             {
                 setWorkerRelationship(worker);
                 editingContext().saveChanges();
+
+                workerThread = (WorkerThread) Thread.currentThread();
             }
             catch (EOGeneralAdaptorException e)
             {
                 // assume optimistic locking failure
+                editingContext().revert();
             }
         }
+
         return worker() == worker;
+    }
+
+
+    // ----------------------------------------------------------
+    /**
+     * Monitor the cancellation state of the job so that we can notify the
+     * worker thread that the user wants to cancel this job.
+     */
+    @Override
+    public void didUpdate()
+    {
+        super.didUpdate();
+
+        if (!alreadyCancelled && isCancelled() && workerThread != null)
+        {
+            alreadyCancelled = true;
+            workerThread.cancelJob();
+        }
     }
 
 
@@ -104,4 +127,8 @@ public abstract class JobBase
 
     //~ Protected Methods .....................................................
 
+    //~ Static/instance variables .............................................
+
+    private transient boolean alreadyCancelled = false;
+    private transient WorkerThread workerThread = null;
 }
