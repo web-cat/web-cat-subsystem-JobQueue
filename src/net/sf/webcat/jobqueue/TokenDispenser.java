@@ -70,7 +70,9 @@ public class TokenDispenser
                 log.error("client was interrupted while waiting for a token.");
             }
         }
-        log.debug("releasing token to worker thread from " + this);
+        tokens--;
+        log.debug("releasing token to worker thread from " + this +
+                " (" + tokens + " tokens remain)");
     }
 
 
@@ -113,7 +115,8 @@ public class TokenDispenser
         long amount = count - totalTokenCount;
         log.debug("depositing " + amount + " tokens in " + this);
         depositTokens(amount);
-        log.debug("new total = " + totalTokenCount + " in " + this);
+        log.debug("new total = " + totalTokenCount + " in " + this +
+                " (" + tokens + " tokens remain)");
     }
 
 
