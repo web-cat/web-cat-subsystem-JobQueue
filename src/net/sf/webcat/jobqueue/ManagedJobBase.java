@@ -392,7 +392,8 @@ public abstract class ManagedJobBase
         setProgress(progress.percentDone());
 
         long currentTime = System.currentTimeMillis();
-        if (currentTime >= timeOfLastProgressSave + PROGRESS_SAVE_DELAY)
+        if (!isCancelled() &&
+                currentTime >= timeOfLastProgressSave + PROGRESS_SAVE_DELAY)
         {
             saveChanges();
 

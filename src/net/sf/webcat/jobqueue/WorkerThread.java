@@ -134,6 +134,7 @@ public abstract class WorkerThread<Job extends JobBase>
                 long totalWait =
                     queueDescriptor().totalWaitForJobs() + jobDuration;
 
+                boolean wasCancelled = currentJob.isCancelled();
                 currentJob.delete();
 
                 try
@@ -145,7 +146,7 @@ public abstract class WorkerThread<Job extends JobBase>
 
                     boolean statsUpdated = false;
 
-                    while (!statsUpdated)
+                    while (!wasCancelled && !statsUpdated)
                     {
                         try
                         {
@@ -344,32 +345,6 @@ public abstract class WorkerThread<Job extends JobBase>
                 {
                     currentJob = candidate;
                 }
-
-                /*candidate.setWorkerRelationship(wd);
-
-                try
-                {
-                    ec.saveChanges();
-
-                    didGetJob = true;
-
-                    try
-                    {
-                        // descriptor().setCurrentJob(candidate);
-                        descriptor().saveChanges();
-                        currentJob = candidate;
-                    }
-                    catch (Exception e)
-                    {
-                        candidate.setWorkerRelationship(null);
-                        ec.saveChanges();
-                    }
-                }
-                catch (Exception e)
-                {
-                    ec.revert();
-                    didGetJob = false;
-                }*/
             }
         }
         while (!didGetJob);
@@ -452,7 +427,9 @@ public abstract class WorkerThread<Job extends JobBase>
         String entityName = queueDescriptor().jobEntityName();
         EOFetchSpecification fetchSpec = new EOFetchSpecification(
                 entityName,
-                ERXQ.isTrue(JobBase.IS_CANCELLED_KEY),
+                ERXQ.and(
+                        ERXQ.isNull(JobBase.WORKER_KEY),
+                        ERXQ.isTrue(JobBase.IS_CANCELLED_KEY)),
                 ERXS.sortOrders(JobBase.ENQUEUE_TIME_KEY, ERXS.ASC));
         fetchSpec.setFetchLimit(1);
 
