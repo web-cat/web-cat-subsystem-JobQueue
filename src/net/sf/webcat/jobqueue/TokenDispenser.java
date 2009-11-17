@@ -44,9 +44,10 @@ public class TokenDispenser
     /**
      * Default constructor
      */
-    public TokenDispenser()
+    public TokenDispenser(long currentTotal)
     {
         tokens = 0;
+        totalTokenCount = currentTotal;
     }
 
 
@@ -69,6 +70,7 @@ public class TokenDispenser
                 log.error("client was interrupted while waiting for a token.");
             }
         }
+        log.debug("releasing token to worker thread from " + this);
     }
 
 
@@ -76,9 +78,10 @@ public class TokenDispenser
     /**
      * Add a token to the dispenser.
      */
-    public synchronized void depositToken()
+    private synchronized void depositToken()
     {
         tokens++;
+        totalTokenCount++;
         notify();
     }
 
@@ -89,7 +92,7 @@ public class TokenDispenser
      *
      * @param count The number of tokens to add.
      */
-    public synchronized void depositTokens(int count)
+    private synchronized void depositTokens(long count)
     {
         while (count > 0)
         {
@@ -99,8 +102,24 @@ public class TokenDispenser
     }
 
 
+    // ----------------------------------------------------------
+    /**
+     * Add multiple tokens to the dispenser.
+     *
+     * @param count The number of tokens to add.
+     */
+    public synchronized void depositTokensUpToTotalCount(long count)
+    {
+        long amount = count - totalTokenCount;
+        log.debug("depositing " + amount + " tokens in " + this);
+        depositTokens(amount);
+        log.debug("new total = " + totalTokenCount + " in " + this);
+    }
+
+
     //~ Instance/static variables .............................................
 
     int tokens;
+    long totalTokenCount;
     static Logger log = Logger.getLogger( TokenDispenser.class );
 }

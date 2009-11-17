@@ -88,7 +88,8 @@ public class QueueDescriptor
         {
             if (dispensers.get(result.id()) == null)
             {
-                dispensers.put(result.id(), new TokenDispenser());
+                dispensers.put(result.id(),
+                    new TokenDispenser(result.jobCount()));
             }
         }
         return result;
@@ -138,12 +139,24 @@ public class QueueDescriptor
     // ----------------------------------------------------------
     /* package */ static void waitForNextJob(QueueDescriptor descriptor)
     {
+        Number id = descriptor.id();
+        assert id != null;
         assert descriptor.editingContext() != null;
         if (descriptor.editingContext() != queueContext())
         {
             descriptor.localInstance(queueContext());
         }
-        waitForNextJob(descriptor.id());
+        TokenDispenser dispenser = null;
+        synchronized (dispensers)
+        {
+            dispenser = dispensers.get(id);
+            if (dispenser == null)
+            {
+                dispenser = new TokenDispenser(descriptor.jobCount());
+                dispensers.put(id, dispenser);
+            }
+        }
+        dispenser.getJobToken();
     }
 
 
@@ -151,17 +164,7 @@ public class QueueDescriptor
     /* package */ static void waitForNextJob(Number descriptorId)
     {
         assert descriptorId != null;
-        TokenDispenser dispenser = null;
-        synchronized (dispensers)
-        {
-            dispenser = dispensers.get(descriptorId);
-            if (dispenser == null)
-            {
-                dispenser = new TokenDispenser();
-                dispensers.put(descriptorId, dispenser);
-            }
-        }
-        dispenser.getJobToken();
+        waitForNextJob(forId(queueContext(), descriptorId.intValue()));
     }
 
 
@@ -180,16 +183,17 @@ public class QueueDescriptor
             dispenser = dispensers.get(id);
             if (dispenser == null)
             {
-                dispenser = new TokenDispenser();
+                dispenser = new TokenDispenser(descriptor.jobCount());
                 dispensers.put(id, dispenser);
             }
         }
-        dispenser.depositToken();
+        dispenser.depositTokensUpToTotalCount(descriptor.jobCount());
     }
 
 
     // ----------------------------------------------------------
-    private static EOEditingContext queueContext()
+    // Used by QueueDelegate
+    /* package */ static EOEditingContext queueContext()
     {
         if (_ec == null)
         {
@@ -207,16 +211,33 @@ public class QueueDescriptor
         // ----------------------------------------------------------
         public QueueDelegate()
         {
-            // TBD
+            // nothing to do
         }
 
+        // ----------------------------------------------------------
+        public void editingContextDidMergeChanges(EOEditingContext context)
+        {
+            synchronized (dispensers)
+            {
+                for (Number id : dispensers.keySet())
+                {
+                    QueueDescriptor descriptor =
+                        forId(queueContext(), id.intValue());
+                    dispensers.get(id).depositTokensUpToTotalCount(
+                        descriptor.jobCount());
+                }
+            }
+        }
     }
 
 
     //~ Instance/static variables .............................................
 
     private static EOEditingContext _ec;
-    private static Map<Number, TokenDispenser> dispensers =
+
+    // Accessed by inner QueueDelegate
+    /* package */ static Map<Number, TokenDispenser> dispensers =
         new HashMap<Number, TokenDispenser>();
+
     static Logger log = Logger.getLogger(QueueDescriptor.class);
 }
