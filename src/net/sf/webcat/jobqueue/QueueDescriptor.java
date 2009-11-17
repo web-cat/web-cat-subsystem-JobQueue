@@ -138,20 +138,27 @@ public class QueueDescriptor
     // ----------------------------------------------------------
     /* package */ static void waitForNextJob(QueueDescriptor descriptor)
     {
-        Number id = descriptor.id();
-        assert id != null;
+        assert descriptor.editingContext() != null;
         if (descriptor.editingContext() != queueContext())
         {
             descriptor.localInstance(queueContext());
         }
+        waitForNextJob(descriptor.id());
+    }
+
+
+    // ----------------------------------------------------------
+    /* package */ static void waitForNextJob(Number descriptorId)
+    {
+        assert descriptorId != null;
         TokenDispenser dispenser = null;
         synchronized (dispensers)
         {
-            dispenser = dispensers.get(id);
+            dispenser = dispensers.get(descriptorId);
             if (dispenser == null)
             {
                 dispenser = new TokenDispenser();
-                dispensers.put(id, dispenser);
+                dispensers.put(descriptorId, dispenser);
             }
         }
         dispenser.getJobToken();

@@ -322,17 +322,9 @@ public abstract class WorkerThread<Job extends JobBase>
 
             if (candidate == null)
             {
-                // If there aren't any jobs currently available, sleep for a
-                // second and then check again.
-
-                try
-                {
-                    Thread.sleep(1000);
-                }
-                catch (InterruptedException e)
-                {
-                    // Do nothing.
-                }
+                // If there aren't any jobs currently available, wait
+                // until something arrives in the queue
+                QueueDescriptor.waitForNextJob(queueDescriptor().id());
             }
             else
             {
