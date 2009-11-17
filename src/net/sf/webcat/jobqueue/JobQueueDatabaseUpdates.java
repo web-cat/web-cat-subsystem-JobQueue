@@ -86,6 +86,20 @@ public class JobQueueDatabaseUpdates
 
     // ----------------------------------------------------------
     /**
+     * Revise structure of the worker descriptor table.
+     * @throws SQLException on error
+     */
+    public void updateIncrement2() throws SQLException
+    {
+        database().executeSQL(
+            "ALTER TABLE TWorkerDescriptor DROP isRunning" );
+        database().executeSQL(
+            "ALTER TABLE TWorkerDescriptor ADD isAlive BIT NOT NULL" );
+    }
+
+
+    // ----------------------------------------------------------
+    /**
      * Create the common columns inherited by all job tables, if needed.
      * This method is intended to be used in other database updaters that
      * own tables containing subclasses of {@link JobBase}.  With
@@ -109,8 +123,10 @@ public class JobQueueDatabaseUpdates
                 + "(enqueueTime DATETIME NOT NULL, "
                 + "OID INTEGER NOT NULL, "
                 + "isCancelled BIT NOT NULL, "
-                + "isPaused BIT NOT NULL, "
+                + "isReady BIT NOT NULL, "
                 + "priority INTEGER NOT NULL, "
+                + "progress DOUBLE, "
+                + "progressMessage MEDIUMTEXT, "
                 + "scheduledTime DATETIME, "
                 + "userId INTEGER, "
                 + "workerId INTEGER )");
