@@ -60,16 +60,13 @@ public class WorkerDescriptor
     // ----------------------------------------------------------
     /**
      * Look up the thread associated with a given descriptor on the current
-     * host.  This method requires that the given descriptor be associated
-     * with the current host, not a different host.
+     * host.
      * @param descriptor The descriptor to use.
-     * @return The worker thread that corresponds to the given descriptor.
+     * @return The worker thread that corresponds to the given descriptor,
+     * or null if there is not one on the current host.
      */
     public static WorkerThread threadFor(WorkerDescriptor descriptor)
     {
-        assert descriptor.host().canonicalHostName().equals(
-            HostDescriptor.canonicalHostName())
-            : "Only threads on the current host can be retrieved";
         return threads.get(descriptor.id());
     }
 
