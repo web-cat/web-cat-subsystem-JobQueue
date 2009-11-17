@@ -340,6 +340,11 @@ public abstract class WorkerThread<Job extends JobBase>
 
                 didGetJob = candidate.volunteerToRun(worker);
 
+                if (didGetJob)
+                {
+                    currentJob = candidate;
+                }
+
                 /*candidate.setWorkerRelationship(wd);
 
                 try
@@ -386,7 +391,7 @@ public abstract class WorkerThread<Job extends JobBase>
                 ERXQ.and(
                         ERXQ.isNull(JobBase.WORKER_KEY),
                         ERXQ.isFalse(JobBase.IS_CANCELLED_KEY),
-                        ERXQ.isFalse(JobBase.IS_PAUSED_KEY)),
+                        ERXQ.isTrue(JobBase.IS_READY_KEY)),
                 ERXS.sortOrders(JobBase.ENQUEUE_TIME_KEY, ERXS.ASC));
         fetchSpec.setFetchLimit(1);
 
