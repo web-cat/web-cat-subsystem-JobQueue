@@ -62,41 +62,14 @@ public class JobQueueDatabaseUpdates
      */
     public void updateIncrement0() throws SQLException
     {
+        createJobBaseTable();
         createHostDescriptorTable();
         createQueueDescriptorTable();
         createWorkerDescriptorTable();
     }
 
 
-    // ----------------------------------------------------------
-    /**
-     * Revise structure of the worker descriptor table.
-     * @throws SQLException on error
-     */
-    public void updateIncrement1() throws SQLException
-    {
-        database().executeSQL(
-            "ALTER TABLE TWorkerDescriptor DROP isAllocated" );
-        database().executeSQL(
-            "ALTER TABLE TWorkerDescriptor DROP idOnHost" );
-        database().executeSQL(
-        "ALTER TABLE TWorkerDescriptor ADD currentJobId INTEGER" );
-    }
-
-
-    // ----------------------------------------------------------
-    /**
-     * Revise structure of the worker descriptor table.
-     * @throws SQLException on error
-     */
-    public void updateIncrement2() throws SQLException
-    {
-        database().executeSQL(
-            "ALTER TABLE TWorkerDescriptor DROP isRunning" );
-        database().executeSQL(
-            "ALTER TABLE TWorkerDescriptor ADD isAlive BIT NOT NULL" );
-    }
-
+    //~ Private Methods .......................................................
 
     // ----------------------------------------------------------
     /**
@@ -112,31 +85,28 @@ public class JobQueueDatabaseUpdates
      * @param tableName The name of the table used by the subclass entity.
      * @throws SQLException on error
      */
-    public static void createJobBaseTable(Database database, String tableName)
-        throws SQLException
+    private void createJobBaseTable() throws SQLException
     {
-        if ( !database.hasTable(tableName) )
+        if ( !database().hasTable("TJobBase") )
         {
-            log.info( "creating table " + tableName );
-            database.executeSQL(
-                "CREATE TABLE " + tableName
+            log.info( "creating table TJobBase" );
+            database().executeSQL(
+                "CREATE TABLE TJobBase "
                 + "(enqueueTime DATETIME NOT NULL, "
                 + "OID INTEGER NOT NULL, "
                 + "isCancelled BIT NOT NULL, "
                 + "isReady BIT NOT NULL, "
-                + "priority INTEGER NOT NULL, "
+                + "priority INTEGER, "
                 + "progress DOUBLE, "
                 + "progressMessage MEDIUMTEXT, "
                 + "scheduledTime DATETIME, "
                 + "userId INTEGER, "
                 + "workerId INTEGER )");
-            database.executeSQL(
-                "ALTER TABLE " + tableName + " ADD PRIMARY KEY (OID)" );
+            database().executeSQL(
+                "ALTER TABLE TJobBase ADD PRIMARY KEY (OID)" );
         }
     }
 
-
-    //~ Private Methods .......................................................
 
     // ----------------------------------------------------------
     /**
@@ -199,9 +169,8 @@ public class JobQueueDatabaseUpdates
                 "CREATE TABLE TWorkerDescriptor "
                 + "(hostId INTEGER , "
                 + "OID INTEGER NOT NULL, "
-                + "idOnHost INTEGER, "
-                + "isAllocated BIT NOT NULL, "
-                + "isRunning BIT NOT NULL, "
+                + "isAlive BIT NOT NULL, "
+                + "currentJobId INTEGER, "
                 + "queueId INTEGER )" );
             database().executeSQL(
                 "ALTER TABLE TWorkerDescriptor ADD PRIMARY KEY (OID)" );
