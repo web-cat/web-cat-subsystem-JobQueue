@@ -137,7 +137,7 @@ public class JobQueue
      * @return The registered descriptor
      */
     @SuppressWarnings("unchecked")
-	public static EOEnterpriseObject registerFirstAvailableDescriptor(
+    public static EOEnterpriseObject registerFirstAvailableDescriptor(
         EOEditingContext        context,
         String                  descriptorEntityName,
         NSDictionary<String, ?> searchBindings,
@@ -164,12 +164,12 @@ public class JobQueue
                         EOUtilities.createAndInsertInstance(
                             context, descriptorEntityName);
                     descriptor.reapplyChangesFromDictionary(
-                    		(NSDictionary<String, Object>)searchBindings);
+                            (NSDictionary<String, Object>)searchBindings);
                     log.debug("descriptor not found: creating a new one");
                     if (initializationBindings != null)
                     {
                         descriptor.reapplyChangesFromDictionary(
-                        	(NSDictionary<String, Object>)
+                            (NSDictionary<String, Object>)
                             initializationBindings);
                         if (log.isDebugEnabled())
                         {
@@ -200,12 +200,13 @@ public class JobQueue
             }
             else
             {
-            	if (log.isDebugEnabled())
-            	{
-            		log.debug(descriptors.count() == 1
-            				  ? "one descriptor found"
-            				  : "multiple descriptors found");
-            	}
+                if (log.isDebugEnabled())
+                {
+                    log.debug(descriptors.count() == 1
+                              ? "one descriptor found"
+                              : "multiple descriptors found");
+                }
+                result = (EOEnterpriseObject)descriptors.objectAtIndex(0);
                 while (descriptors.count() > 1)
                 {
                     result = (EOEnterpriseObject)descriptors.objectAtIndex(0);
