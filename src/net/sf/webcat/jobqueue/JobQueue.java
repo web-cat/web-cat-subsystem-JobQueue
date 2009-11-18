@@ -25,8 +25,11 @@ import com.webobjects.eoaccess.EOGeneralAdaptorException;
 import com.webobjects.eoaccess.EOUtilities;
 import com.webobjects.eocontrol.EOEditingContext;
 import com.webobjects.eocontrol.EOEnterpriseObject;
+import com.webobjects.eocontrol.EOFetchSpecification;
 import com.webobjects.foundation.NSArray;
 import com.webobjects.foundation.NSDictionary;
+import er.extensions.eof.ERXEC;
+import er.extensions.eof.ERXQ;
 import net.sf.webcat.core.*;
 import net.sf.webcat.dbupdate.*;
 import org.apache.log4j.Logger;
@@ -65,10 +68,55 @@ public class JobQueue
     {
         super.init();
 
+        initialized = true;
         HostDescriptor.ensureCurrentHostIsRegistered();
         log.info(
             "canonical host name = " + HostDescriptor.canonicalHostName());
-        initialized = true;
+
+        EOEditingContext ec = Application.newPeerEditingContext();
+        ec.lock();
+        try
+        {
+            HostDescriptor thisHost = HostDescriptor.currentHost(ec);
+
+            // mark all workers for this host as not alive
+            NSArray<WorkerDescriptor> oldWorkers =
+                WorkerDescriptor.objectsForHost(ec, thisHost);
+
+            for (WorkerDescriptor worker : oldWorkers)
+            {
+                if (worker.currentJobId() > 0L)
+                {
+                    worker.setCurrentJobIdRaw(null);
+                }
+                if (worker.isAlive())
+                {
+                    worker.setIsAlive(false);
+                }
+
+                // mark all jobs assigned to workers on this host as unassigned
+                EOFetchSpecification fs = new EOFetchSpecification(
+                    worker.queue().jobEntityName(),
+                    ERXQ.is(JobBase.WORKER_KEY, worker),
+                    null);
+                NSArray<?> jobs = ec.objectsWithFetchSpecification(fs);
+                for (Object jobObject : jobs)
+                {
+                    JobBase job = (JobBase)jobObject;
+                    job.setWorkerRelationship(null);
+                }
+            }
+
+            ec.saveChanges();
+        }
+        catch (Exception e)
+        {
+            log.error("Unexpected exception initializing subsystem", e);
+        }
+        finally
+        {
+            ec.unlock();
+        }
     }
 
 
