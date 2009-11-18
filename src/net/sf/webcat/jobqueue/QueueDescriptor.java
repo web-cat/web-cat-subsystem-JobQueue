@@ -205,7 +205,11 @@ public class QueueDescriptor
 
 
     // ----------------------------------------------------------
-    private static class QueueDelegate
+    /**
+     * This class needs to be public as an implementation side-effect so that
+     * WebObjects' NSSelector can access the delegate methods.
+     */
+    public static class QueueDelegate
         extends ERXDefaultEditingContextDelegate
     {
         // ----------------------------------------------------------
