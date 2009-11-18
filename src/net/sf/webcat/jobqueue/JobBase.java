@@ -114,6 +114,9 @@ public abstract class JobBase
     {
         if (!isReady() && value)
         {
+            log.debug("isReady for job " + id() + " transitioning to true; "
+                    + "setting flag to notify queue on next save");
+
             queueNeedsNotified = true;
         }
 
@@ -124,18 +127,24 @@ public abstract class JobBase
     // ----------------------------------------------------------
     private void notifyQueueOfReadyJob()
     {
+        log.debug(entityName() + " queue descriptor increasing job count to "
+                + "trigger job dispatch");
+
         queueNeedsNotified = false;
 
         EOEditingContext ec = Application.newPeerEditingContext();
         QueueDescriptor queue = QueueDescriptor.descriptorFor(
                 ec, entityName());
 
+        long oldJobCount = 0;
+
         boolean saved = false;
         while (!saved)
         {
             try
             {
-                queue.setJobCount(queue.jobCount() + 1);
+                oldJobCount = queue.jobCount();
+                queue.setJobCount(oldJobCount + 1);
                 ec.saveChanges();
                 saved = true;
             }
@@ -148,6 +157,9 @@ public abstract class JobBase
                 }
             }
         }
+
+        log.debug(entityName() + " queue job count was " + oldJobCount + "; "
+                + "now " + queue.jobCount());
 
         Application.releasePeerEditingContext(ec);
     }
