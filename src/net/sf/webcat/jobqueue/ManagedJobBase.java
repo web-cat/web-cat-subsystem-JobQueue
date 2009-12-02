@@ -90,11 +90,7 @@ public abstract class ManagedJobBase
      */
     public boolean isCancelled()
     {
-        Number result =
-            (Number)valueForKey(JobBase.IS_CANCELLED_KEY);
-        return (result == null)
-            ? false
-            : (result.intValue() > 0);
+        return (Boolean)valueForKey(JobBase.IS_CANCELLED_KEY);
     }
 
 
@@ -107,9 +103,7 @@ public abstract class ManagedJobBase
      */
     public void setIsCancelled( boolean value )
     {
-        takeValueForKey(
-            ERXConstant.integerForInt(value ? 1 : 0),
-            JobBase.IS_CANCELLED_KEY);
+        takeValueForKey(value, JobBase.IS_CANCELLED_KEY);
     }
 
 
@@ -120,11 +114,7 @@ public abstract class ManagedJobBase
      */
     public boolean isReady()
     {
-        Number result =
-            (Number)valueForKey(JobBase.IS_READY_KEY);
-        return (result == null)
-            ? false
-            : (result.intValue() > 0);
+        return (Boolean)valueForKey(JobBase.IS_READY_KEY);
     }
 
 
@@ -137,9 +127,7 @@ public abstract class ManagedJobBase
      */
     public void setIsReady( boolean value )
     {
-        takeValueForKey(
-            ERXConstant.integerForInt(value ? 1 : 0),
-            JobBase.IS_READY_KEY);
+        takeValueForKey(value, JobBase.IS_READY_KEY);
     }
 
 

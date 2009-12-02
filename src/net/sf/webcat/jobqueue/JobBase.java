@@ -62,6 +62,19 @@ public abstract class JobBase
 
     // ----------------------------------------------------------
     /**
+     * A convenience method to get the job's current progress as an integer
+     * percentage.
+     *
+     * @return the percentage of job progress completed
+     */
+    public int progressPercentage()
+    {
+        return (int) (progress() * 100 + 0.5);
+    }
+
+
+    // ----------------------------------------------------------
+    /**
      * Checks to see if this job is available for running, and if so,
      * allocates it to the given worker.  This sets the {@link #worker()}
      * relation to point to the worker thread on success, and returns true.
