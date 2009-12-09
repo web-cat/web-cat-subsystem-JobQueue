@@ -81,7 +81,7 @@ public class JobQueue
 
             // mark all workers for this host as not alive
             NSArray<WorkerDescriptor> oldWorkers =
-                WorkerDescriptor.objectsForHost(ec, thisHost);
+                WorkerDescriptor.descriptorsForHost(ec, thisHost);
 
             for (WorkerDescriptor worker : oldWorkers)
             {
