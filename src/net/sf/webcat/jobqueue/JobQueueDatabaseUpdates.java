@@ -69,6 +69,18 @@ public class JobQueueDatabaseUpdates
     }
 
 
+    // ----------------------------------------------------------
+    /**
+     * Adds the "suspensionReason" column to the TJobBase table.
+     * @throws SQLException on error
+     */
+    public void updateIncrement1() throws SQLException
+    {
+        database().executeSQL(
+            "alter table TJobBase add suspensionReason MEDIUMTEXT");
+    }
+
+
     //~ Private Methods .......................................................
 
     // ----------------------------------------------------------

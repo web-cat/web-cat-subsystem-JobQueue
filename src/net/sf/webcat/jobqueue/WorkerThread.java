@@ -21,6 +21,8 @@
 
 package net.sf.webcat.jobqueue;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import org.apache.log4j.Logger;
 import org.jfree.util.Log;
 import com.webobjects.eoaccess.EOGeneralAdaptorException;
@@ -129,7 +131,6 @@ public abstract class WorkerThread<Job extends JobBase>
                 waitForAvailableJob();
 
                 long jobStartTime = System.currentTimeMillis();
-
                 boolean jobFailed = false;
 
                 try
@@ -138,14 +139,29 @@ public abstract class WorkerThread<Job extends JobBase>
                 }
                 catch (Exception e)
                 {
-                    log.error("Process job threw exception", e);
                     jobFailed = true;
 
                     currentJob.setIsReady(false);
+                    currentJob.setWorkerRelationship(null);
+
+                    resetJob();
+                    sendJobSuspensionNotification(e);
+
                     currentJob = null;
                     localContext().saveChanges(); // TODO check for optimistic locking failures?
+                }
 
-                    sendJobSuspensionNotification(e);
+                // If the job set its own state back to not-ready, consider it
+                // as failed so that we don't delete it and can come back to it
+                // later.
+                if (currentJob != null && !currentJob.isReady())
+                {
+                    jobFailed = true;
+
+                    currentJob.setWorkerRelationship(null);
+                    currentJob = null;
+
+                    localContext().saveChanges(); // TODO check for optimistic locking failures?
                 }
 
                 if (!jobFailed)
@@ -240,8 +256,22 @@ public abstract class WorkerThread<Job extends JobBase>
      * they will force the current job to be suspended (paused) and then
      * the {@link #sendJobSuspensionNotification()} method will be
      * invoked.
+     *
+     * @throws Exception if an exception occurred
      */
-    protected abstract void processJob();
+    protected abstract void processJob() throws Exception;
+
+
+    // ----------------------------------------------------------
+    /**
+     * Resets the state of the job when it is suspended due to an exception.
+     * Subclasses can override this method to perform any additional
+     * modification of specific job attributes.
+     */
+    protected void resetJob()
+    {
+        // Default implementation does nothing.
+    }
 
 
     // ----------------------------------------------------------
@@ -336,15 +366,55 @@ public abstract class WorkerThread<Job extends JobBase>
     // ----------------------------------------------------------
     /**
      * Notify the administrator and any other relevant personnel that the
-     * current job has been suspended.  The job's "isPaused" flag has
-     * already been set before this is called.
+     * current job has been suspended.  The job's "isReady" flag is already
+     * cleared before this is called.
+     *
      *
      * @param e the exception thrown by {@link #processJob()}
      */
     protected void sendJobSuspensionNotification(Exception e)
     {
-        // TODO: implement
+        StringWriter sw = new StringWriter();
+
+        if(currentJob.suspensionReason() != null)
+        {
+            sw.append(currentJob.suspensionReason());
+            sw.append("\n\n");
+        }
+
+        sw.append("The worker thread's processJob() method threw the "
+                + "following exception:\n\n");
+        e.printStackTrace(new PrintWriter(sw));
+
+        String additionalInfo = additionalSuspensionInfo();
+        if (additionalInfo != null)
+        {
+            sw.append("\n");
+            sw.append("Additional information about the job:\n");
+            sw.append(additionalInfo);
+        }
+
+        String reason = sw.toString();
+        currentJob.setSuspensionReason(reason);
+
+        // TODO: replace this with a notification message
         log.error("processJob() threw the following exception:", e);
+    }
+
+
+    // ----------------------------------------------------------
+    /**
+     * Gets additional information about the job when it is suspended due to an
+     * error. This information is included in the suspension reason that is
+     * shown to the user. Subclasses should override this and provide extra
+     * information based on fields in the corresponding JobBase subclass.
+     *
+     * @return additional information to be shown to the user when the job is
+     *     suspended
+     */
+    protected String additionalSuspensionInfo()
+    {
+        return null;
     }
 
 

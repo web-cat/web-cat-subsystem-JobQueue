@@ -100,6 +100,7 @@ public abstract class JobBase
         {
             try
             {
+                setSuspensionReason(null);
                 setWorkerRelationship(worker);
                 editingContext().saveChanges();
 

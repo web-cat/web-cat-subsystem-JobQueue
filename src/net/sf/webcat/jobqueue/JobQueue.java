@@ -31,6 +31,7 @@ import com.webobjects.foundation.NSDictionary;
 import er.extensions.eof.ERXEC;
 import er.extensions.eof.ERXQ;
 import net.sf.webcat.core.*;
+import net.sf.webcat.core.messaging.UnexpectedExceptionMessage;
 import net.sf.webcat.dbupdate.*;
 import org.apache.log4j.Logger;
 
@@ -191,12 +192,10 @@ public class JobQueue
             {
                 log.error("failure registering "
                     + descriptorEntityName + searchBindings);
-                Application.emailExceptionToAdmins(
-                    null,
-                    null,
-                    "failure registering "
-                    + descriptorEntityName
-                    + searchBindings);
+                new UnexpectedExceptionMessage(null, null, null,
+                        "failure registering "
+                        + descriptorEntityName
+                        + searchBindings).send();
             }
             else
             {
@@ -333,12 +332,10 @@ public class JobQueue
             {
                 log.error("failure registering "
                     + descriptorEntityName + searchBindings);
-                Application.emailExceptionToAdmins(
-                    null,
-                    null,
+                new UnexpectedExceptionMessage(null, null, null,
                     "failure registering "
                     + descriptorEntityName
-                    + searchBindings);
+                    + searchBindings).send();
             }
             else
             {

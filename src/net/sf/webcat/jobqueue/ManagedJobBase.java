@@ -239,6 +239,30 @@ public abstract class ManagedJobBase
 
     // ----------------------------------------------------------
     /**
+     * Retrieve the value of the <code>suspensionReason</code> attribute.
+     *
+     * @return the value of the attribute
+     */
+    public String suspensionReason()
+    {
+        return (String) valueForKey(JobBase.SUSPENSION_REASON_KEY);
+    }
+
+
+    // ----------------------------------------------------------
+    /**
+     * Set the value of the <code>suspensionReason</code> attribute.
+     *
+     * @param value The new value of the attribute
+     */
+    public void setSuspensionReason(String value)
+    {
+        takeValueForKey(value, JobBase.SUSPENSION_REASON_KEY);
+    }
+
+
+    // ----------------------------------------------------------
+    /**
      * Retrieve the entity pointed to by the <code>user</code>
      * relationship.
      * @return the entity in the relationship
