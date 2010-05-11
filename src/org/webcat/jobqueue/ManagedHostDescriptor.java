@@ -19,14 +19,14 @@
  |  along with Web-CAT; if not, see <http://www.gnu.org/licenses/>.
 \*==========================================================================*/
 
-package net.sf.webcat.jobqueue;
+package org.webcat.jobqueue;
 
 import com.webobjects.eoaccess.*;
 import com.webobjects.eocontrol.*;
 import com.webobjects.foundation.*;
 import java.util.Enumeration;
 import org.apache.log4j.Logger;
-import net.sf.webcat.core.IndependentEOManager;
+import org.webcat.core.IndependentEOManager;
 
 // -------------------------------------------------------------------------
 /**
@@ -112,7 +112,7 @@ public class ManagedHostDescriptor
      *
      * @param value The new entity to relate to
      */
-    public void addToWorkers(net.sf.webcat.jobqueue.WorkerDescriptor value)
+    public void addToWorkers(org.webcat.jobqueue.WorkerDescriptor value)
     {
         addObjectToPropertyWithKey(value, HostDescriptor.WORKERS_KEY);
     }
@@ -128,7 +128,7 @@ public class ManagedHostDescriptor
      * @param value The entity to remove from the relationship
      */
     public void removeFromWorkers(
-        net.sf.webcat.jobqueue.WorkerDescriptor value)
+        org.webcat.jobqueue.WorkerDescriptor value)
     {
         removeObjectFromPropertyWithKey(value, HostDescriptor.WORKERS_KEY);
     }
@@ -142,7 +142,7 @@ public class ManagedHostDescriptor
      * @param value The new entity to relate to
      */
     public void addToWorkersRelationship(
-        net.sf.webcat.jobqueue.WorkerDescriptor value)
+        org.webcat.jobqueue.WorkerDescriptor value)
     {
         addObjectToBothSidesOfRelationshipWithKey(
             value, HostDescriptor.WORKERS_KEY);
@@ -157,7 +157,7 @@ public class ManagedHostDescriptor
      * @param value The entity to remove from the relationship
      */
     public void removeFromWorkersRelationship(
-        net.sf.webcat.jobqueue.WorkerDescriptor value)
+        org.webcat.jobqueue.WorkerDescriptor value)
     {
         removeObjectFromBothSidesOfRelationshipWithKey(
             value, HostDescriptor.WORKERS_KEY);

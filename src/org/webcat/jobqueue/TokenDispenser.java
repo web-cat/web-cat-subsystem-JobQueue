@@ -19,7 +19,7 @@
  |  along with Web-CAT; if not, see <http://www.gnu.org/licenses/>.
 \*==========================================================================*/
 
-package net.sf.webcat.jobqueue;
+package org.webcat.jobqueue;
 
 import java.util.*;
 import org.apache.log4j.Logger;

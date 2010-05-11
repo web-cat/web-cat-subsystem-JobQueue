@@ -1,9 +1,9 @@
-package net.sf.webcat.jobqueue;
+package org.webcat.jobqueue;
 
 import java.io.File;
-import net.sf.webcat.core.WCComponent;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.webcat.core.WCComponent;
 import com.webobjects.appserver.WOActionResults;
 import com.webobjects.appserver.WOContext;
 import com.webobjects.appserver.WOResponse;

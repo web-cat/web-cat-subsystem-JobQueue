@@ -19,7 +19,7 @@
  |  along with Web-CAT; if not, see <http://www.gnu.org/licenses/>.
 \*==========================================================================*/
 
-package net.sf.webcat.jobqueue;
+package org.webcat.jobqueue;
 
 import com.webobjects.eoaccess.EOGeneralAdaptorException;
 import com.webobjects.eoaccess.EOUtilities;
@@ -30,10 +30,10 @@ import com.webobjects.foundation.NSArray;
 import com.webobjects.foundation.NSDictionary;
 import er.extensions.eof.ERXEC;
 import er.extensions.eof.ERXQ;
-import net.sf.webcat.core.*;
-import net.sf.webcat.core.messaging.UnexpectedExceptionMessage;
-import net.sf.webcat.dbupdate.*;
 import org.apache.log4j.Logger;
+import org.webcat.core.*;
+import org.webcat.core.messaging.UnexpectedExceptionMessage;
+import org.webcat.dbupdate.*;
 
 //-------------------------------------------------------------------------
 /**

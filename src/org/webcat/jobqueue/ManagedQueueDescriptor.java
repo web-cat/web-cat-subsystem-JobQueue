@@ -19,7 +19,7 @@
  |  along with Web-CAT; if not, see <http://www.gnu.org/licenses/>.
 \*==========================================================================*/
 
-package net.sf.webcat.jobqueue;
+package org.webcat.jobqueue;
 
 import com.webobjects.eoaccess.*;
 import com.webobjects.eocontrol.*;
@@ -28,7 +28,7 @@ import er.extensions.eof.ERXConstant;
 
 import java.util.Enumeration;
 import org.apache.log4j.Logger;
-import net.sf.webcat.core.IndependentEOManager;
+import org.webcat.core.IndependentEOManager;
 
 // -------------------------------------------------------------------------
 /**

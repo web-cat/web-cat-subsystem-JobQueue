@@ -19,7 +19,7 @@
  |  along with Web-CAT; if not, see <http://www.gnu.org/licenses/>.
 \*==========================================================================*/
 
-package net.sf.webcat.jobqueue;
+package org.webcat.jobqueue;
 
 import com.webobjects.eoaccess.*;
 import com.webobjects.eocontrol.*;
@@ -27,7 +27,7 @@ import com.webobjects.foundation.*;
 import er.extensions.eof.ERXConstant;
 import java.util.Enumeration;
 import org.apache.log4j.Logger;
-import net.sf.webcat.core.IndependentEOManager;
+import org.webcat.core.IndependentEOManager;
 
 // -------------------------------------------------------------------------
 /**
@@ -267,9 +267,9 @@ public abstract class ManagedJobBase
      * relationship.
      * @return the entity in the relationship
      */
-    public net.sf.webcat.core.User user()
+    public org.webcat.core.User user()
     {
-        return (net.sf.webcat.core.User)valueForKey(JobBase.USER_KEY);
+        return (org.webcat.core.User)valueForKey(JobBase.USER_KEY);
     }
 
 
@@ -281,7 +281,7 @@ public abstract class ManagedJobBase
      *
      * @param value The new entity to relate to
      */
-    public void setUserRelationship(net.sf.webcat.core.User value)
+    public void setUserRelationship(org.webcat.core.User value)
     {
         addObjectToBothSidesOfRelationshipWithKey(value, JobBase.USER_KEY);
     }

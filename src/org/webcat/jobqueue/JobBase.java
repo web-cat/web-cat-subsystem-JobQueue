@@ -19,9 +19,9 @@
  |  along with Web-CAT; if not, see <http://www.gnu.org/licenses/>.
 \*==========================================================================*/
 
-package net.sf.webcat.jobqueue;
+package org.webcat.jobqueue;
 
-import net.sf.webcat.core.Application;
+import org.webcat.core.Application;
 import com.webobjects.eoaccess.EOGeneralAdaptorException;
 import com.webobjects.eocontrol.*;
 import com.webobjects.foundation.*;
@@ -36,7 +36,7 @@ import er.extensions.eof.ERXEOAccessUtilities;
  * can certainly add more as necessary.  To create a job subclass, create
  * an entity the normal way, then set its parent entity to JobBase.  To
  * generate SQL for the corresponding table, build off of the
- * {@link JobQueueDatabaseUpdates#createJobBaseTable(net.sf.webcat.dbupdate.Database,String)}
+ * {@link JobQueueDatabaseUpdates#createJobBaseTable(org.webcat.dbupdate.Database,String)}
  * method, which will generate the inherited field definitions for you.
  *
  * @author

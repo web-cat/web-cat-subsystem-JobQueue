@@ -22,7 +22,7 @@
  |  along with Web-CAT; if not, see <http://www.gnu.org/licenses/>.
 \*==========================================================================*/
 
-package net.sf.webcat.jobqueue;
+package org.webcat.jobqueue;
 
 import com.webobjects.eoaccess.*;
 import com.webobjects.eocontrol.*;
@@ -169,8 +169,8 @@ public abstract class _QueueDescriptor
     // To-one relationships ---
     // To-many relationships ---
     public static final String WORKERS_KEY = "workers";
-    public static final ERXKey<net.sf.webcat.jobqueue.WorkerDescriptor> workers =
-        new ERXKey<net.sf.webcat.jobqueue.WorkerDescriptor>(WORKERS_KEY);
+    public static final ERXKey<org.webcat.jobqueue.WorkerDescriptor> workers =
+        new ERXKey<org.webcat.jobqueue.WorkerDescriptor>(WORKERS_KEY);
     // Fetch specifications ---
     public static final String DESCRIPTORS_FOR_JOB_ENTITY_NAME_FSPEC = "descriptorsForJobEntityName";
     public static final String ENTITY_NAME = "QueueDescriptor";
@@ -707,7 +707,7 @@ public abstract class _QueueDescriptor
      * @return an NSArray of the entities in the relationship
      */
     @SuppressWarnings("unchecked")
-    public NSArray<net.sf.webcat.jobqueue.WorkerDescriptor> workers()
+    public NSArray<org.webcat.jobqueue.WorkerDescriptor> workers()
     {
         return (NSArray)storedValueForKey( "workers" );
     }
@@ -720,7 +720,7 @@ public abstract class _QueueDescriptor
      *
      * @param value The new set of entities to relate to
      */
-    public void setWorkers( NSMutableArray<net.sf.webcat.jobqueue.WorkerDescriptor>  value )
+    public void setWorkers( NSMutableArray<org.webcat.jobqueue.WorkerDescriptor>  value )
     {
         if (log.isDebugEnabled())
         {
@@ -740,15 +740,15 @@ public abstract class _QueueDescriptor
      *
      * @param value The new entity to relate to
      */
-    public void addToWorkers( net.sf.webcat.jobqueue.WorkerDescriptor value )
+    public void addToWorkers( org.webcat.jobqueue.WorkerDescriptor value )
     {
         if (log.isDebugEnabled())
         {
             log.debug( "addToWorkers("
                 + value + "): was " + workers() );
         }
-        NSMutableArray<net.sf.webcat.jobqueue.WorkerDescriptor> array =
-            (NSMutableArray<net.sf.webcat.jobqueue.WorkerDescriptor>)workers();
+        NSMutableArray<org.webcat.jobqueue.WorkerDescriptor> array =
+            (NSMutableArray<org.webcat.jobqueue.WorkerDescriptor>)workers();
         willChange();
         array.addObject( value );
     }
@@ -763,15 +763,15 @@ public abstract class _QueueDescriptor
      *
      * @param value The entity to remove from the relationship
      */
-    public void removeFromWorkers( net.sf.webcat.jobqueue.WorkerDescriptor value )
+    public void removeFromWorkers( org.webcat.jobqueue.WorkerDescriptor value )
     {
         if (log.isDebugEnabled())
         {
             log.debug( "RemoveFromWorkers("
                 + value + "): was " + workers() );
         }
-        NSMutableArray<net.sf.webcat.jobqueue.WorkerDescriptor> array =
-            (NSMutableArray<net.sf.webcat.jobqueue.WorkerDescriptor>)workers();
+        NSMutableArray<org.webcat.jobqueue.WorkerDescriptor> array =
+            (NSMutableArray<org.webcat.jobqueue.WorkerDescriptor>)workers();
         willChange();
         array.removeObject( value );
     }
@@ -784,7 +784,7 @@ public abstract class _QueueDescriptor
      *
      * @param value The new entity to relate to
      */
-    public void addToWorkersRelationship( net.sf.webcat.jobqueue.WorkerDescriptor value )
+    public void addToWorkersRelationship( org.webcat.jobqueue.WorkerDescriptor value )
     {
         if (log.isDebugEnabled())
         {
@@ -803,7 +803,7 @@ public abstract class _QueueDescriptor
      *
      * @param value The entity to remove from the relationship
      */
-    public void removeFromWorkersRelationship( net.sf.webcat.jobqueue.WorkerDescriptor value )
+    public void removeFromWorkersRelationship( org.webcat.jobqueue.WorkerDescriptor value )
     {
         if (log.isDebugEnabled())
         {
@@ -822,7 +822,7 @@ public abstract class _QueueDescriptor
      *
      * @return The new entity
      */
-    public net.sf.webcat.jobqueue.WorkerDescriptor createWorkersRelationship()
+    public org.webcat.jobqueue.WorkerDescriptor createWorkersRelationship()
     {
         if (log.isDebugEnabled())
         {
@@ -835,7 +835,7 @@ public abstract class _QueueDescriptor
         editingContext().insertObject( eoObject );
         addObjectToBothSidesOfRelationshipWithKey(
             eoObject, "workers" );
-        return (net.sf.webcat.jobqueue.WorkerDescriptor)eoObject;
+        return (org.webcat.jobqueue.WorkerDescriptor)eoObject;
     }
 
 
@@ -846,7 +846,7 @@ public abstract class _QueueDescriptor
      *
      * @param value The entity to remove from the relationship and then delete
      */
-    public void deleteWorkersRelationship( net.sf.webcat.jobqueue.WorkerDescriptor value )
+    public void deleteWorkersRelationship( org.webcat.jobqueue.WorkerDescriptor value )
     {
         if (log.isDebugEnabled())
         {
@@ -871,7 +871,7 @@ public abstract class _QueueDescriptor
             log.debug( "deleteAllWorkersRelationships(): was "
                 + workers() );
         }
-        for (net.sf.webcat.jobqueue.WorkerDescriptor object : workers())
+        for (org.webcat.jobqueue.WorkerDescriptor object : workers())
         {
             deleteWorkersRelationship(object);
         }

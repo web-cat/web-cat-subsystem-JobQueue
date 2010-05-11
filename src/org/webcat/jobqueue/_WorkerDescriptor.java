@@ -22,7 +22,7 @@
  |  along with Web-CAT; if not, see <http://www.gnu.org/licenses/>.
 \*==========================================================================*/
 
-package net.sf.webcat.jobqueue;
+package org.webcat.jobqueue;
 
 import com.webobjects.eoaccess.*;
 import com.webobjects.eocontrol.*;
@@ -150,11 +150,11 @@ public abstract class _WorkerDescriptor
         new ERXKey<Integer>(IS_ALIVE_KEY);
     // To-one relationships ---
     public static final String HOST_KEY = "host";
-    public static final ERXKey<net.sf.webcat.jobqueue.HostDescriptor> host =
-        new ERXKey<net.sf.webcat.jobqueue.HostDescriptor>(HOST_KEY);
+    public static final ERXKey<org.webcat.jobqueue.HostDescriptor> host =
+        new ERXKey<org.webcat.jobqueue.HostDescriptor>(HOST_KEY);
     public static final String QUEUE_KEY = "queue";
-    public static final ERXKey<net.sf.webcat.jobqueue.QueueDescriptor> queue =
-        new ERXKey<net.sf.webcat.jobqueue.QueueDescriptor>(QUEUE_KEY);
+    public static final ERXKey<org.webcat.jobqueue.QueueDescriptor> queue =
+        new ERXKey<org.webcat.jobqueue.QueueDescriptor>(QUEUE_KEY);
     // To-many relationships ---
     // Fetch specifications ---
     public static final String DESCRIPTORS_FOR_HOST_FSPEC = "descriptorsForHost";
@@ -342,9 +342,9 @@ public abstract class _WorkerDescriptor
      * relationship.
      * @return the entity in the relationship
      */
-    public net.sf.webcat.jobqueue.HostDescriptor host()
+    public org.webcat.jobqueue.HostDescriptor host()
     {
-        return (net.sf.webcat.jobqueue.HostDescriptor)storedValueForKey( "host" );
+        return (org.webcat.jobqueue.HostDescriptor)storedValueForKey( "host" );
     }
 
 
@@ -357,7 +357,7 @@ public abstract class _WorkerDescriptor
      *
      * @param value The new entity to relate to
      */
-    public void setHost( net.sf.webcat.jobqueue.HostDescriptor value )
+    public void setHost( org.webcat.jobqueue.HostDescriptor value )
     {
         if (log.isDebugEnabled())
         {
@@ -377,7 +377,7 @@ public abstract class _WorkerDescriptor
      * @param value The new entity to relate to
      */
     public void setHostRelationship(
-        net.sf.webcat.jobqueue.HostDescriptor value )
+        org.webcat.jobqueue.HostDescriptor value )
     {
         if (log.isDebugEnabled())
         {
@@ -386,7 +386,7 @@ public abstract class _WorkerDescriptor
         }
         if ( value == null )
         {
-            net.sf.webcat.jobqueue.HostDescriptor object = host();
+            org.webcat.jobqueue.HostDescriptor object = host();
             if ( object != null )
                 removeObjectFromBothSidesOfRelationshipWithKey( object, "host" );
         }
@@ -403,9 +403,9 @@ public abstract class _WorkerDescriptor
      * relationship.
      * @return the entity in the relationship
      */
-    public net.sf.webcat.jobqueue.QueueDescriptor queue()
+    public org.webcat.jobqueue.QueueDescriptor queue()
     {
-        return (net.sf.webcat.jobqueue.QueueDescriptor)storedValueForKey( "queue" );
+        return (org.webcat.jobqueue.QueueDescriptor)storedValueForKey( "queue" );
     }
 
 
@@ -418,7 +418,7 @@ public abstract class _WorkerDescriptor
      *
      * @param value The new entity to relate to
      */
-    public void setQueue( net.sf.webcat.jobqueue.QueueDescriptor value )
+    public void setQueue( org.webcat.jobqueue.QueueDescriptor value )
     {
         if (log.isDebugEnabled())
         {
@@ -438,7 +438,7 @@ public abstract class _WorkerDescriptor
      * @param value The new entity to relate to
      */
     public void setQueueRelationship(
-        net.sf.webcat.jobqueue.QueueDescriptor value )
+        org.webcat.jobqueue.QueueDescriptor value )
     {
         if (log.isDebugEnabled())
         {
@@ -447,7 +447,7 @@ public abstract class _WorkerDescriptor
         }
         if ( value == null )
         {
-            net.sf.webcat.jobqueue.QueueDescriptor object = queue();
+            org.webcat.jobqueue.QueueDescriptor object = queue();
             if ( object != null )
                 removeObjectFromBothSidesOfRelationshipWithKey( object, "queue" );
         }
@@ -895,7 +895,7 @@ public abstract class _WorkerDescriptor
      */
     public static NSArray<WorkerDescriptor> descriptorsForHost(
             EOEditingContext context,
-            net.sf.webcat.jobqueue.HostDescriptor hostBinding
+            org.webcat.jobqueue.HostDescriptor hostBinding
         )
     {
         EOFetchSpecification spec = EOFetchSpecification

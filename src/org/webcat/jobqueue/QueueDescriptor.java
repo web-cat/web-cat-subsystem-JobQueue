@@ -19,16 +19,16 @@
  |  along with Web-CAT; if not, see <http://www.gnu.org/licenses/>.
 \*==========================================================================*/
 
-package net.sf.webcat.jobqueue;
+package org.webcat.jobqueue;
 
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.log4j.Logger;
+import org.webcat.core.Application;
 import com.webobjects.eoaccess.EOGeneralAdaptorException;
 import com.webobjects.eocontrol.*;
 import com.webobjects.foundation.*;
 import er.extensions.eof.ERXDefaultEditingContextDelegate;
-import net.sf.webcat.core.Application;
 
 // -------------------------------------------------------------------------
 /**

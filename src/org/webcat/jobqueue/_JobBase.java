@@ -22,7 +22,7 @@
  |  along with Web-CAT; if not, see <http://www.gnu.org/licenses/>.
 \*==========================================================================*/
 
-package net.sf.webcat.jobqueue;
+package org.webcat.jobqueue;
 
 import com.webobjects.eoaccess.*;
 import com.webobjects.eocontrol.*;
@@ -87,11 +87,11 @@ public abstract class _JobBase
         new ERXKey<String>(SUSPENSION_REASON_KEY);
     // To-one relationships ---
     public static final String USER_KEY = BASE_PREFIX_DOT + "user";
-    public static final ERXKey<net.sf.webcat.core.User> user =
-        new ERXKey<net.sf.webcat.core.User>(USER_KEY);
+    public static final ERXKey<org.webcat.core.User> user =
+        new ERXKey<org.webcat.core.User>(USER_KEY);
     public static final String WORKER_KEY = BASE_PREFIX_DOT + "worker";
-    public static final ERXKey<net.sf.webcat.jobqueue.WorkerDescriptor> worker =
-        new ERXKey<net.sf.webcat.jobqueue.WorkerDescriptor>(WORKER_KEY);
+    public static final ERXKey<org.webcat.jobqueue.WorkerDescriptor> worker =
+        new ERXKey<org.webcat.jobqueue.WorkerDescriptor>(WORKER_KEY);
     // To-many relationships ---
     // Fetch specifications ---
     public static final String NEXT_JOB_FSPEC = "nextJob";
@@ -522,9 +522,9 @@ public abstract class _JobBase
      * relationship.
      * @return the entity in the relationship
      */
-    public net.sf.webcat.core.User user()
+    public org.webcat.core.User user()
     {
-        return (net.sf.webcat.core.User)storedValueForKey( "user" );
+        return (org.webcat.core.User)storedValueForKey( "user" );
     }
 
 
@@ -537,7 +537,7 @@ public abstract class _JobBase
      *
      * @param value The new entity to relate to
      */
-    public void setUser( net.sf.webcat.core.User value )
+    public void setUser( org.webcat.core.User value )
     {
         if (log.isDebugEnabled())
         {
@@ -557,7 +557,7 @@ public abstract class _JobBase
      * @param value The new entity to relate to
      */
     public void setUserRelationship(
-        net.sf.webcat.core.User value )
+            org.webcat.core.User value )
     {
         if (log.isDebugEnabled())
         {
@@ -566,7 +566,7 @@ public abstract class _JobBase
         }
         if ( value == null )
         {
-            net.sf.webcat.core.User object = user();
+            org.webcat.core.User object = user();
             if ( object != null )
                 removeObjectFromBothSidesOfRelationshipWithKey( object, "user" );
         }
@@ -583,9 +583,9 @@ public abstract class _JobBase
      * relationship.
      * @return the entity in the relationship
      */
-    public net.sf.webcat.jobqueue.WorkerDescriptor worker()
+    public org.webcat.jobqueue.WorkerDescriptor worker()
     {
-        return (net.sf.webcat.jobqueue.WorkerDescriptor)storedValueForKey( "worker" );
+        return (org.webcat.jobqueue.WorkerDescriptor)storedValueForKey( "worker" );
     }
 
 
@@ -598,7 +598,7 @@ public abstract class _JobBase
      *
      * @param value The new entity to relate to
      */
-    public void setWorker( net.sf.webcat.jobqueue.WorkerDescriptor value )
+    public void setWorker( org.webcat.jobqueue.WorkerDescriptor value )
     {
         if (log.isDebugEnabled())
         {
@@ -618,7 +618,7 @@ public abstract class _JobBase
      * @param value The new entity to relate to
      */
     public void setWorkerRelationship(
-        net.sf.webcat.jobqueue.WorkerDescriptor value )
+        org.webcat.jobqueue.WorkerDescriptor value )
     {
         if (log.isDebugEnabled())
         {
@@ -627,7 +627,7 @@ public abstract class _JobBase
         }
         if ( value == null )
         {
-            net.sf.webcat.jobqueue.WorkerDescriptor object = worker();
+            org.webcat.jobqueue.WorkerDescriptor object = worker();
             if ( object != null )
                 removeObjectFromBothSidesOfRelationshipWithKey( object, "worker" );
         }

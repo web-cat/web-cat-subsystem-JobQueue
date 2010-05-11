@@ -19,12 +19,13 @@
  |  along with Web-CAT; if not, see <http://www.gnu.org/licenses/>.
 \*==========================================================================*/
 
-package net.sf.webcat.jobqueue;
+package org.webcat.jobqueue;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import org.apache.log4j.Logger;
 import org.jfree.util.Log;
+import org.webcat.core.Application;
 import com.webobjects.eoaccess.EOGeneralAdaptorException;
 import com.webobjects.eoaccess.EOUtilities;
 import com.webobjects.eocontrol.EOEditingContext;
@@ -32,7 +33,6 @@ import com.webobjects.eocontrol.EOFetchSpecification;
 import com.webobjects.foundation.NSArray;
 import er.extensions.eof.ERXQ;
 import er.extensions.eof.ERXS;
-import net.sf.webcat.core.Application;
 
 //-------------------------------------------------------------------------
 /**
