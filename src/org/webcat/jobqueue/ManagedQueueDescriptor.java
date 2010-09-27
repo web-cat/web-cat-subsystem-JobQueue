@@ -34,8 +34,8 @@ import org.webcat.core.IndependentEOManager;
 /**
  * A subclass of IndependentEOManager that holds one {@link QueueDescriptor}.
  *
- * @author stedwar2
- * @author Last changed by $Author$
+ * @author  Stephen Edwards
+ * @author  Last changed by $Author$
  * @version $Revision$, $Date$
  */
 public class ManagedQueueDescriptor

@@ -37,8 +37,8 @@ import org.webcat.core.IndependentEOManager;
  * persisted to the database immediately and independently of other objects in
  * various editing contexts.
  *
- * @author stedwar2
- * @author Last changed by $Author$
+ * @author  Stephen Edwards
+ * @author  Last changed by $Author$
  * @version $Revision$, $Date$
  */
 public abstract class ManagedJobBase

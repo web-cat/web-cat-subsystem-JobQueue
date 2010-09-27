@@ -43,8 +43,8 @@ import org.webcat.dbupdate.*;
  * parallel execution of worker threads, coordinated through the
  * corresponding queues using the central database as the mediator.
  *
- * @author Stephen Edwards
- * @author Last changed by $Author$
+ * @author  Stephen Edwards
+ * @author  Last changed by $Author$
  * @version $Revision$, $Date$
  */
 public class JobQueue

@@ -32,8 +32,8 @@ import org.apache.log4j.Logger;
  * based off the original GraderQueue class in the Grader
  * subsystem.
  *
- * @author Stephen Edwards
- * @author Last changed by $Author$
+ * @author  Stephen Edwards
+ * @author  Last changed by $Author$
  * @version $Revision$, $Date$
  */
 public class TokenDispenser

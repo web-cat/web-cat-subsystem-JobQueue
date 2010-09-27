@@ -33,8 +33,8 @@ import org.webcat.core.IndependentEOManager;
 /**
  * A subclass of IndependentEOManager that holds one {@link WorkerDescriptor}.
  *
- * @author stedwar2
- * @author Last changed by $Author$
+ * @author  Stephen Edwards
+ * @author  Last changed by $Author$
  * @version $Revision$, $Date$
  */
 public  class ManagedWorkerDescriptor

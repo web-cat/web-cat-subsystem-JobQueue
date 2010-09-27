@@ -32,8 +32,8 @@ import org.webcat.core.IndependentEOManager;
 /**
  * A subclass of IndependentEOManager that holds one {@link HostDescriptor}.
  *
- * @author Stephen Edwards
- * @author Last changed by $Author$
+ * @author  Stephen Edwards
+ * @author  Last changed by $Author$
  * @version $Revision$, $Date$
  */
 public class ManagedHostDescriptor

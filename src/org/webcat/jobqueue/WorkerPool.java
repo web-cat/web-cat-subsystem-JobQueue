@@ -29,8 +29,8 @@ package org.webcat.jobqueue;
  *     pool work on.
  * @param <Worker> The kind of worker that this pool manages.
  *
- * @author Stephen Edwards
- * @author Last changed by $Author$
+ * @author  Stephen Edwards
+ * @author  Last changed by $Author$
  * @version $Revision$, $Date$
  */
 public class WorkerPool<Job extends JobBase, Worker extends WorkerThread<Job>>
@@ -45,7 +45,4 @@ public class WorkerPool<Job extends JobBase, Worker extends WorkerThread<Job>>
     {
         // ...
     }
-
-
-    //~ Methods ...............................................................
 }

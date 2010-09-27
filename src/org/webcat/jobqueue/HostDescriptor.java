@@ -30,8 +30,8 @@ import com.webobjects.foundation.*;
  * Represents and identifies a Web-CAT host within the cluster of
  * servers operating on a single shared database.
  *
- * @author Stephen Edwards
- * @author Last changed by $Author$
+ * @author  Stephen Edwards
+ * @author  Last changed by $Author$
  * @version $Revision$, $Date$
  */
 public class HostDescriptor
@@ -129,17 +129,17 @@ public class HostDescriptor
      * Registers a host in the database, if it has not already been
      * registered.
      * @param context The editing context to use.
-     * @param hostName The name of the host.
+     * @param forHostName The name of the host.
      * @return The registered descriptor.
      */
     private static HostDescriptor registerHost(
-        EOEditingContext context, String hostName)
+        EOEditingContext context, String forHostName)
     {
         return (HostDescriptor)JobQueue.registerDescriptor(
             context,
             ENTITY_NAME,
             new NSDictionary<String, String>(
-                hostName,
+                forHostName,
                 HOST_NAME_KEY),
             null);
     }

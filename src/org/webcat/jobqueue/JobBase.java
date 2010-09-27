@@ -83,13 +83,13 @@ public abstract class JobBase
      * saved as part of the process, in order to commit the new value of
      * worker() to the database.
      *
-     * @param worker The worker thread that wishes to take on this job
+     * @param withWorker The worker thread that wishes to take on this job
      * @return True if the worker has been allocated this job, or false
      *     if this worker cannot be given the job (because it has been
      *     cancelled or paused, or because it has already been allocated
      *     to another worker).
      */
-    public boolean volunteerToRun(WorkerDescriptor worker)
+    public boolean volunteerToRun(WorkerDescriptor withWorker)
     {
         if (isCancelled() || !isReady())
         {
@@ -101,7 +101,7 @@ public abstract class JobBase
             try
             {
                 setSuspensionReason(null);
-                setWorkerRelationship(worker);
+                setWorkerRelationship(withWorker);
                 editingContext().saveChanges();
 
                 workerThread = (WorkerThread) Thread.currentThread();
@@ -113,7 +113,7 @@ public abstract class JobBase
             }
         }
 
-        return worker() == worker;
+        return worker() == withWorker;
     }
 
 

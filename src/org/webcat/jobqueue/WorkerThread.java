@@ -43,8 +43,8 @@ import er.extensions.eof.ERXS;
  * @param <Job> The subclass of {@link JobBase} that this worker thread
  *     works on.
  *
- * @author Stephen Edwards
- * @author Last changed by $Author$
+ * @author  Stephen Edwards
+ * @author  Last changed by $Author$
  * @version $Revision$, $Date$
  */
 public abstract class WorkerThread<Job extends JobBase>
