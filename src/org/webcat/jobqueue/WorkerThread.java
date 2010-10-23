@@ -148,12 +148,13 @@ public abstract class WorkerThread<Job extends JobBase>
                     sendJobSuspensionNotification(e);
 
                     currentJob = null;
-                    localContext().saveChanges(); // TODO check for optimistic locking failures?
+                    // TODO check for optimistic locking failures?
+                    localContext().saveChanges();
                 }
 
-                // If the job set its own state back to not-ready, consider it
-                // as failed so that we don't delete it and can come back to it
-                // later.
+                // If the job set its own state back to not-ready, consider
+                // it as failed so that we don't delete it and can come back
+                // to it later.
                 if (currentJob != null && !currentJob.isReady())
                 {
                     jobFailed = true;
@@ -161,7 +162,8 @@ public abstract class WorkerThread<Job extends JobBase>
                     currentJob.setWorkerRelationship(null);
                     currentJob = null;
 
-                    localContext().saveChanges(); // TODO check for optimistic locking failures?
+                    // TODO check for optimistic locking failures?
+                    localContext().saveChanges();
                 }
 
                 if (!jobFailed)
@@ -194,8 +196,10 @@ public abstract class WorkerThread<Job extends JobBase>
                             {
                                 queueDescriptor().setJobsCountedWithWaits(
                                         jobsCountedWithWaits);
-                                queueDescriptor().setMostRecentJobWait(jobDuration);
-                                queueDescriptor().setTotalWaitForJobs(totalWait);
+                                queueDescriptor()
+                                    .setMostRecentJobWait(jobDuration);
+                                queueDescriptor()
+                                    .setTotalWaitForJobs(totalWait);
 
                                 queueDescriptor().saveChanges();
                                 statsUpdated = true;
@@ -282,8 +286,8 @@ public abstract class WorkerThread<Job extends JobBase>
      * subclasses may override this to provide their own cleanup logic if
      * necessary.
      *
-     * Subclasses that override this method should always call the super method
-     * first.
+     * Subclasses that override this method should always call the super
+     * method first.
      */
     protected void cancelJob()
     {
