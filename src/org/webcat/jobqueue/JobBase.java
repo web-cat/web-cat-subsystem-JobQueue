@@ -147,35 +147,42 @@ public abstract class JobBase
         queueNeedsNotified = false;
 
         EOEditingContext ec = Application.newPeerEditingContext();
-        QueueDescriptor queue = QueueDescriptor.descriptorFor(
+        try
+        {
+            ec.lock();
+            QueueDescriptor queue = QueueDescriptor.descriptorFor(
                 ec, entityName());
 
-        long oldJobCount = 0;
+            long oldJobCount = 0;
 
-        boolean saved = false;
-        while (!saved)
-        {
-            try
+            boolean saved = false;
+            while (!saved)
             {
-                oldJobCount = queue.jobCount();
-                queue.setJobCount(oldJobCount + 1);
-                ec.saveChanges();
-                saved = true;
-            }
-            catch (EOGeneralAdaptorException e)
-            {
-                if (ERXEOAccessUtilities.isOptimisticLockingFailure(e))
+                try
                 {
-                    queue = (QueueDescriptor)
-                        ERXEOAccessUtilities.refetchFailedObject(ec, e);
+                    oldJobCount = queue.jobCount();
+                    queue.setJobCount(oldJobCount + 1);
+                    ec.saveChanges();
+                    saved = true;
+                }
+                catch (EOGeneralAdaptorException e)
+                {
+                    if (ERXEOAccessUtilities.isOptimisticLockingFailure(e))
+                    {
+                        queue = (QueueDescriptor)
+                            ERXEOAccessUtilities.refetchFailedObject(ec, e);
+                    }
                 }
             }
+
+            log.debug(entityName() + " queue job count was "
+                + oldJobCount + "; " + "now " + queue.jobCount());
         }
-
-        log.debug(entityName() + " queue job count was " + oldJobCount + "; "
-                + "now " + queue.jobCount());
-
-        Application.releasePeerEditingContext(ec);
+        finally
+        {
+            ec.unlock();
+            Application.releasePeerEditingContext(ec);
+        }
     }
 
 

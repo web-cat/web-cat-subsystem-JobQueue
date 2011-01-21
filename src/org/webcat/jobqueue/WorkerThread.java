@@ -119,6 +119,9 @@ public abstract class WorkerThread<Job extends JobBase>
     @SuppressWarnings("unchecked")
     public final void run()
     {
+        // Make sure application is fully initialized before running.
+        Application.waitForInitializationToComplete();
+
         logDebug("started");
 
         try
@@ -289,12 +292,9 @@ public abstract class WorkerThread<Job extends JobBase>
      * Subclasses that override this method should always call the super
      * method first.
      */
-    protected void cancelJob()
+    protected synchronized void cancelJob()
     {
-        synchronized (this)
-        {
-            isCancelled = true;
-        }
+        isCancelled = true;
     }
 
 
@@ -358,12 +358,13 @@ public abstract class WorkerThread<Job extends JobBase>
      */
     protected void recycleAndRelockLocalContext()
     {
+        // Unlock and release the current editing context
         ec.unlock();
         Application.releasePeerEditingContext(ec);
         ec = null;
 
-        EOEditingContext lc = localContext();
-        lc.lock();
+        // Generate a fresh editing context and lock it
+        localContext().lock();
     }
 
 
