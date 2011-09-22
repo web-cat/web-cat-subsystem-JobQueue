@@ -164,7 +164,14 @@ public class QueueDescriptor
     /* package */ static void waitForNextJob(Number descriptorId)
     {
         assert descriptorId != null;
-        waitForNextJob(forId(queueContext(), descriptorId.intValue()));
+        QueueDescriptor descriptor =
+            forId(queueContext(), descriptorId.intValue());
+        if (descriptor == null)
+        {
+            log.error("waitForNextJob(id = " + descriptorId + "): no EO with "
+                + "specified ID could be retrieved");
+        }
+        waitForNextJob(descriptor);
     }
 
 

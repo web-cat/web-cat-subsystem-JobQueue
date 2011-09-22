@@ -451,7 +451,14 @@ public abstract class WorkerThread<Job extends JobBase>
                 // If there aren't any jobs currently available, wait
                 // until something arrives in the queue
                 logDebug("waiting for queue to wake me");
-                QueueDescriptor.waitForNextJob(queueDescriptor().id());
+                try
+                {
+                    QueueDescriptor.waitForNextJob(queueDescriptor().id());
+                }
+                catch (Exception e)
+                {
+                    // If this blows up, just repeat the loop and try again
+                }
                 logDebug("woken by the queue");
             }
             else
