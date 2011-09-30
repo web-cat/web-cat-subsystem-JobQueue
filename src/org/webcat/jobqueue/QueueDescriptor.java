@@ -144,7 +144,16 @@ public class QueueDescriptor
         assert descriptor.editingContext() != null;
         if (descriptor.editingContext() != queueContext())
         {
-            descriptor.localInstance(queueContext());
+            EOEditingContext qc = queueContext();
+            try
+            {
+                qc.lock();
+                descriptor = descriptor.localInstance(qc);
+            }
+            finally
+            {
+                qc.unlock();
+            }
         }
         TokenDispenser dispenser = null;
         synchronized (dispensers)
@@ -164,13 +173,25 @@ public class QueueDescriptor
     /* package */ static void waitForNextJob(Number descriptorId)
     {
         assert descriptorId != null;
-        QueueDescriptor descriptor =
-            forId(queueContext(), descriptorId.intValue());
-        if (descriptor == null)
+        EOEditingContext qc = queueContext();
+        QueueDescriptor descriptor = null;
+
+        try
         {
-            log.error("waitForNextJob(id = " + descriptorId + "): no EO with "
-                + "specified ID could be retrieved");
+            qc.lock();
+            descriptor = forId(qc, descriptorId.intValue());
+
+            if (descriptor == null)
+            {
+                log.error("waitForNextJob(id = " + descriptorId + "): no EO with "
+                    + "specified ID could be retrieved");
+            }
         }
+        finally
+        {
+            qc.unlock();
+        }
+
         waitForNextJob(descriptor);
     }
 
