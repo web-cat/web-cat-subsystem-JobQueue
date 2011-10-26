@@ -160,15 +160,12 @@ public abstract class JobBase
             QueueDescriptor queue = QueueDescriptor.descriptorFor(
                 ec, entityName());
 
-            long oldJobCount = 0;
-
             boolean saved = false;
             while (!saved)
             {
                 try
                 {
-                    oldJobCount = queue.jobCount();
-                    queue.setJobCount(oldJobCount + 1);
+                    queue.setNewestEntryId(id().longValue());
                     ec.saveChanges();
                     saved = true;
                 }
@@ -182,8 +179,8 @@ public abstract class JobBase
                 }
             }
 
-            log.debug(entityName() + " queue job count was "
-                + oldJobCount + "; " + "now " + queue.jobCount());
+            log.debug(entityName() + " queue newest id now "
+                + queue.newestEntryId());
         }
         finally
         {

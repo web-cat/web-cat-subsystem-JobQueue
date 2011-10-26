@@ -81,6 +81,30 @@ public class JobQueueDatabaseUpdates
     }
 
 
+    // ----------------------------------------------------------
+    /**
+     * Adds the "suspensionReason" column to the TJobBase table.
+     * @throws SQLException on error
+     */
+    public void updateIncrement2() throws SQLException
+    {
+        database().executeSQL(
+            "alter table TQueueDescriptor change defaultJobWait "
+            + "defaultJobProcessingTime BIGINT");
+        database().executeSQL(
+            "alter table TQueueDescriptor change totalWaitForJobs "
+            + "cumulativeProcessingTime BIGINT");
+        database().executeSQL(
+            "alter table TQueueDescriptor change jobsCountedWithWaits "
+            + "jobsProcessed BIGINT");
+        database().executeSQL(
+            "alter table TQueueDescriptor change jobCount "
+            + "movingAverageProcessingTime BIGINT");
+        database().executeSQL(
+            "update TQueueDescriptor set movingAverageProcessingTime = NULL");
+    }
+
+
     //~ Private Methods .......................................................
 
     // ----------------------------------------------------------
