@@ -297,6 +297,23 @@ public class ManagedQueueDescriptor
     }
 
 
+    // ----------------------------------------------------------
+    public void waitForNextJob()
+    {
+        EOEditingContext ec = clientContext();
+        try
+        {
+            ec.lock();
+            QueueDescriptor qd = (QueueDescriptor)localInstanceIn(ec);
+            QueueDescriptor.waitForNextJob(qd);
+        }
+        finally
+        {
+            ec.unlock();
+        }
+    }
+
+
     //~ Instance/static variables .............................................
 
     static Logger log = Logger.getLogger( QueueDescriptor.class );

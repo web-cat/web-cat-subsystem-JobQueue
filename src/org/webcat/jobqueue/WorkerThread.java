@@ -61,12 +61,21 @@ public abstract class WorkerThread<Job extends JobBase>
      */
     public WorkerThread(String queueEntity)
     {
-        descriptor = new ManagedWorkerDescriptor(
-            WorkerDescriptor.registerWorker(
-                localContext(),
-                HostDescriptor.currentHost(localContext()),
-                QueueDescriptor.descriptorFor(localContext(), queueEntity),
-                this));
+        EOEditingContext myec = localContext();
+        try
+        {
+            myec.lock();
+            descriptor = new ManagedWorkerDescriptor(
+                WorkerDescriptor.registerWorker(
+                    myec,
+                    HostDescriptor.currentHost(myec),
+                    QueueDescriptor.descriptorFor(myec, queueEntity),
+                    this));
+        }
+        finally
+        {
+            myec.unlock();
+        }
     }
 
 
@@ -125,9 +134,9 @@ public abstract class WorkerThread<Job extends JobBase>
 
         logDebug("started");
 
-        try
+        while (true)
         {
-            while (true)
+            try
             {
                 localContext().lock();
 
@@ -216,15 +225,16 @@ public abstract class WorkerThread<Job extends JobBase>
                         }
                     }
                 }
-
+            }
+            catch (Exception e)
+            {
+                // FIXME what should we do here?
+                log.error("Exception in worker thread:", e);
+            }
+            finally
+            {
                 localContext().unlock();
             }
-        }
-        catch (Exception e)
-        {
-            // FIXME what should we do here when an exception breaks the loop?
-            log.error("Exception killed worker thread:", e);
-            localContext().unlock();
         }
     }
 
@@ -323,6 +333,29 @@ public abstract class WorkerThread<Job extends JobBase>
         if (ec == null)
         {
             ec = Application.newPeerEditingContext();
+            try
+            {
+                ec.lock();
+                if (queueDescriptor != null)
+                {
+                    queueDescriptor = new ManagedQueueDescriptor(
+                        (QueueDescriptor)queueDescriptor.localInstanceIn(ec));
+                }
+                if (hostDescriptor != null)
+                {
+                    hostDescriptor = new ManagedHostDescriptor(
+                        (HostDescriptor)hostDescriptor.localInstanceIn(ec));
+                }
+                if (descriptor != null)
+                {
+                    descriptor = new ManagedWorkerDescriptor(
+                        (WorkerDescriptor)descriptor.localInstanceIn(ec));
+                }
+            }
+            finally
+            {
+                ec.unlock();
+            }
         }
         return ec;
     }
@@ -430,11 +463,16 @@ public abstract class WorkerThread<Job extends JobBase>
                 logDebug("waiting for queue to wake me");
                 try
                 {
-                    QueueDescriptor.waitForNextJob(queueDescriptor().id());
+                    localContext().unlock();
+                    queueDescriptor().waitForNextJob();
                 }
                 catch (Exception e)
                 {
                     // If this blows up, just repeat the loop and try again
+                }
+                finally
+                {
+                    localContext().lock();
                 }
                 logDebug("woken by the queue");
             }

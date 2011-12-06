@@ -112,7 +112,7 @@ public class TokenDispenser
      */
     public synchronized void ensureAtLeastNTokens(int n)
     {
-        int amount = n - tokens;
+        int amount = (n > tokens) ? (n - tokens) : 0;
         log.debug("depositing " + amount + " tokens in " + this
             + " (already holding " + tokens + " tokens)");
         depositTokens(amount);
