@@ -204,7 +204,15 @@ public class QueueDescriptor
                 dispensers.put(id, dispenser);
             }
         }
-        dispenser.getJobToken();
+        try
+        {
+            descriptor.editingContext().unlock();
+            dispenser.getJobToken();
+        }
+        finally
+        {
+            descriptor.editingContext().lock();
+        }
     }
 
 
