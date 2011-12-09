@@ -463,16 +463,11 @@ public abstract class WorkerThread<Job extends JobBase>
                 logDebug("waiting for queue to wake me");
                 try
                 {
-                    localContext().unlock();
                     queueDescriptor().waitForNextJob();
                 }
                 catch (Exception e)
                 {
                     // If this blows up, just repeat the loop and try again
-                }
-                finally
-                {
-                    localContext().lock();
                 }
                 logDebug("woken by the queue");
             }
@@ -604,8 +599,19 @@ public abstract class WorkerThread<Job extends JobBase>
     // ----------------------------------------------------------
     private void logDebug(Object obj)
     {
-        log.debug(queueDescriptor().jobEntityName()
+        if (log.isDebugEnabled())
+        {
+            if (ec != null)
+            {
+                ec.lock();
+            }
+            log.debug(queueDescriptor().jobEntityName()
                 + " worker thread " + getId() + ": " + obj);
+            if (ec != null)
+            {
+                ec.unlock();
+            }
+        }
     }
 
 
