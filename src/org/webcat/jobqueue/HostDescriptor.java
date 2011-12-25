@@ -1,7 +1,7 @@
 /*==========================================================================*\
  |  $Id$
  |*-------------------------------------------------------------------------*|
- |  Copyright (C) 2008-2009 Virginia Tech
+ |  Copyright (C) 2008-2011 Virginia Tech
  |
  |  This file is part of Web-CAT.
  |
@@ -22,6 +22,7 @@
 package org.webcat.jobqueue;
 
 import org.webcat.core.Application;
+import org.webcat.woextensions.WCEC;
 import com.webobjects.eocontrol.*;
 import com.webobjects.foundation.*;
 
@@ -118,8 +119,9 @@ public class HostDescriptor
     {
         if (currentHost == null)
         {
+            // TODO: This needs to be fixed regarding the EC used
             currentHost =
-                newHostDescriptor(Application.newPeerEditingContext());
+                newHostDescriptor(WCEC.newAutoLockingEditingContext());
         }
     }
 
