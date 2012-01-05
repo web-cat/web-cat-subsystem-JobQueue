@@ -64,6 +64,29 @@ public abstract class JobBase
     //~ Public Methods ........................................................
 
     // ----------------------------------------------------------
+    @Override
+    public void setProgress(double value)
+    {
+        if (Double.isNaN(value) || Double.isInfinite(value) || value < 0.0)
+        {
+            value = 0.0;
+        }
+        else if (value > 1.0)
+        {
+            if (value <= 100.0)
+            {
+                value /= 100.0;
+            }
+            else
+            {
+                value = 1.0;
+            }
+        }
+        super.setProgress(value);
+    }
+
+
+    // ----------------------------------------------------------
     /**
      * A convenience method to get the job's current progress as an integer
      * percentage.
