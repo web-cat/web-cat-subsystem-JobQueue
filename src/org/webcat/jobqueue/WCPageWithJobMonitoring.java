@@ -1,7 +1,5 @@
 /*==========================================================================*\
- |  $Id$
- |*-------------------------------------------------------------------------*|
- |  Copyright (C) 2009-2010 Virginia Tech
+ |  Copyright (C) 2009-2018 Virginia Tech
  |
  |  This file is part of Web-CAT.
  |
@@ -34,8 +32,6 @@ import com.webobjects.appserver.WOResponse;
  * Base page that includes job monitoring support.
  *
  * @author  Tony Allevato
- * @author  Last changed by $Author$
- * @version $Revision$, $Date$
  */
 public class WCPageWithJobMonitoring
     extends WCComponent

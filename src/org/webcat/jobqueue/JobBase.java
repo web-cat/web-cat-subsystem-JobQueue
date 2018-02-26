@@ -1,7 +1,5 @@
 /*==========================================================================*\
- |  $Id$
- |*-------------------------------------------------------------------------*|
- |  Copyright (C) 2008-2011 Virginia Tech
+ |  Copyright (C) 2008-2018 Virginia Tech
  |
  |  This file is part of Web-CAT.
  |
@@ -43,8 +41,6 @@ import er.extensions.eof.ERXEOAccessUtilities;
  * method, which will generate the inherited field definitions for you.
  *
  * @author  Stephen Edwards
- * @author  Last changed by $Author$
- * @version $Revision$, $Date$
  */
 public abstract class JobBase
     extends _JobBase

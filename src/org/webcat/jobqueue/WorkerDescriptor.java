@@ -1,7 +1,5 @@
 /*==========================================================================*\
- |  $Id$
- |*-------------------------------------------------------------------------*|
- |  Copyright (C) 2008-2009 Virginia Tech
+ |  Copyright (C) 2008-2018 Virginia Tech
  |
  |  This file is part of Web-CAT.
  |
@@ -39,8 +37,6 @@ import er.extensions.foundation.ERXValueUtilities;
  * WorkerDescriptor.
  *
  * @author  Stephen Edwards
- * @author  Last changed by $Author$
- * @version $Revision$, $Date$
  */
 public class WorkerDescriptor
     extends _WorkerDescriptor

@@ -1,7 +1,5 @@
 /*==========================================================================*\
- |  $Id$
- |*-------------------------------------------------------------------------*|
- |  Copyright (C) 2008-2011 Virginia Tech
+ |  Copyright (C) 2008-2018 Virginia Tech
  |
  |  This file is part of Web-CAT.
  |
@@ -32,8 +30,6 @@ import com.webobjects.foundation.*;
  * servers operating on a single shared database.
  *
  * @author  Stephen Edwards
- * @author  Last changed by $Author$
- * @version $Revision$, $Date$
  */
 public class HostDescriptor
     extends _HostDescriptor

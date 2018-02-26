@@ -1,7 +1,5 @@
 /*==========================================================================*\
- |  $Id$
- |*-------------------------------------------------------------------------*|
- |  Copyright (C) 2008-2009 Virginia Tech
+ |  Copyright (C) 2008-2018 Virginia Tech
  |
  |  This file is part of Web-CAT.
  |
@@ -34,8 +32,6 @@ import com.webobjects.foundation.NSMutableArray;
  * allowing for easy management of subtasks.
  *
  * @author Tony Allevato
- * @author Last changed by $Author$
- * @version $Revision$, $Date$
  */
 public class HierarchicalProgressTracker
 {

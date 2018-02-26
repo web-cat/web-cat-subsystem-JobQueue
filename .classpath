@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="/Core/bin"/>
 	<classpathentry exported="true" kind="con" path="WOFramework/Core"/>
 	<classpathentry exported="true" kind="con" path="WOFramework/DBUpdateEngine"/>
 	<classpathentry exported="true" kind="con" path="WOFramework/EOJDBCPrototypes"/>

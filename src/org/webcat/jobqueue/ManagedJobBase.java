@@ -1,7 +1,5 @@
 /*==========================================================================*\
- |  $Id$
- |*-------------------------------------------------------------------------*|
- |  Copyright (C) 2008-2009 Virginia Tech
+ |  Copyright (C) 2008-2018 Virginia Tech
  |
  |  This file is part of Web-CAT.
  |
@@ -38,8 +36,6 @@ import org.webcat.core.IndependentEOManager;
  * various editing contexts.
  *
  * @author  Stephen Edwards
- * @author  Last changed by $Author$
- * @version $Revision$, $Date$
  */
 public abstract class ManagedJobBase
     extends IndependentEOManager

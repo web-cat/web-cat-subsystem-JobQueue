@@ -1,7 +1,5 @@
 /*==========================================================================*\
- |  $Id$
- |*-------------------------------------------------------------------------*|
- |  Copyright (C) 2009-2011 Virginia Tech
+ |  Copyright (C) 2009-2018 Virginia Tech
  |
  |  This file is part of Web-CAT.
  |
@@ -46,8 +44,6 @@ import er.extensions.eof.ERXS;
  *     works on.
  *
  * @author  Stephen Edwards
- * @author  Last changed by $Author$
- * @version $Revision$, $Date$
  */
 public abstract class WorkerThread<Job extends JobBase>
     extends Thread

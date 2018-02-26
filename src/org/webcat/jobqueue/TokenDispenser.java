@@ -1,7 +1,5 @@
 /*==========================================================================*\
- |  $Id$
- |*-------------------------------------------------------------------------*|
- |  Copyright (C) 2009-2011 Virginia Tech
+ |  Copyright (C) 2009-2018 Virginia Tech
  |
  |  This file is part of Web-CAT.
  |
@@ -33,8 +31,6 @@ import org.apache.log4j.Logger;
  * subsystem.
  *
  * @author  Stephen Edwards
- * @author  Last changed by $Author$
- * @version $Revision$, $Date$
  */
 public class TokenDispenser
 {
