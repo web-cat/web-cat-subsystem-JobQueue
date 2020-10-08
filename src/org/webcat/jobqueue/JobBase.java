@@ -1,5 +1,5 @@
 /*==========================================================================*\
- |  Copyright (C) 2008-2018 Virginia Tech
+ |  Copyright (C) 2008-2021 Virginia Tech
  |
  |  This file is part of Web-CAT.
  |
@@ -22,7 +22,6 @@ package org.webcat.jobqueue;
 import org.webcat.core.Application;
 import org.webcat.woextensions.ECAction;
 import static org.webcat.woextensions.ECAction.run;
-import org.webcat.woextensions.WCEC;
 import com.webobjects.eoaccess.EOGeneralAdaptorException;
 import com.webobjects.eocontrol.*;
 import com.webobjects.foundation.*;
@@ -230,7 +229,7 @@ public abstract class JobBase
         if (!alreadyCancelled && isCancelled() && workerThread != null)
         {
             alreadyCancelled = true;
-            workerThread.cancelJob();
+            workerThread.cancelJob(wcEditingContext());
             workerThread = null;
         }
 

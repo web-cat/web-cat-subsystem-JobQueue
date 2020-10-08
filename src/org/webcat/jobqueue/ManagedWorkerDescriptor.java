@@ -25,7 +25,7 @@ import com.webobjects.foundation.*;
 import er.extensions.eof.ERXConstant;
 import java.util.Enumeration;
 import org.apache.log4j.Logger;
-import org.webcat.core.IndependentEOManager;
+import org.webcat.woextensions.IndependentEOManager;
 
 // -------------------------------------------------------------------------
 /**
@@ -167,5 +167,5 @@ public  class ManagedWorkerDescriptor
 
     //~ Instance/static variables .............................................
 
-    static Logger log = Logger.getLogger( WorkerDescriptor.class );
+    static Logger log = Logger.getLogger(WorkerDescriptor.class);
 }

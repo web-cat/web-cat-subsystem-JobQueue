@@ -1,5 +1,5 @@
 /*==========================================================================*\
- |  Copyright (C) 2008-2018 Virginia Tech
+ |  Copyright (C) 2008-2021 Virginia Tech
  |
  |  This file is part of Web-CAT.
  |
@@ -66,7 +66,7 @@ public class HostDescriptor
      * @return The managed descriptor.
      */
     public static ManagedHostDescriptor newHostDescriptor(
-        EOEditingContext context)
+        WCEC context)
     {
         return new ManagedHostDescriptor(
             registerHost(context, canonicalHostName()));
@@ -117,7 +117,8 @@ public class HostDescriptor
         {
             // TODO: This needs to be fixed regarding the EC used
             currentHost =
-                newHostDescriptor(WCEC.newAutoLockingEditingContext());
+                newHostDescriptor(
+                    WCEC.factoryWithToolOSC().newAutoLockingEditingContext());
         }
     }
 
@@ -131,7 +132,7 @@ public class HostDescriptor
      * @return The registered descriptor.
      */
     private static HostDescriptor registerHost(
-        EOEditingContext context, String forHostName)
+        WCEC context, String forHostName)
     {
         return (HostDescriptor)JobQueue.registerDescriptor(
             context,

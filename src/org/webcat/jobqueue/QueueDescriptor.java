@@ -1,5 +1,5 @@
 /*==========================================================================*\
- |  Copyright (C) 2008-2018 Virginia Tech
+ |  Copyright (C) 2008-2021 Virginia Tech
  |
  |  This file is part of Web-CAT.
  |
@@ -217,7 +217,7 @@ public class QueueDescriptor
             {
                 int initialTokenCount = 0;
                 String name = null;
-                EOEditingContext ec = WCEC.newEditingContext();
+                WCEC ec = WCEC.factoryWithToolOSC()._newEditingContext();
                 try
                 {
                     ec.lock();
@@ -240,7 +240,7 @@ public class QueueDescriptor
 
     // ----------------------------------------------------------
     // Used by QueueDelegate
-    private static EOEditingContext queueContext()
+    private static WCEC queueContext()
     {
         return _ec;
     }
@@ -271,7 +271,7 @@ public class QueueDescriptor
             }
             if (jobContext == null)
             {
-                jobContext = WCEC.newEditingContext();
+                jobContext = WCEC.factoryWithToolOSC()._newEditingContext();
             }
             synchronized (dispensers)
             {
@@ -308,7 +308,7 @@ public class QueueDescriptor
 
     //~ Instance/static variables .............................................
 
-    private static EOEditingContext _ec;
+    private static WCEC _ec;
     public static class QueueEC extends WCEC
     {
         // ----------------------------------------------------------
@@ -393,13 +393,21 @@ public class QueueDescriptor
 
     static {
 //        _ec = Application.newPeerEditingContext();
-        _ec = new WCEC.WCECFactory() {
-            protected EOEditingContext _createEditingContext(
+        _ec = (WCEC)new WCEC.WCECFactory() {
+            protected WCEC _createEditingContext(
                 EOObjectStore parent)
             {
-                return new QueueEC(parent == null
+                QueueEC ec = new QueueEC(parent == null
                     ? EOEditingContext.defaultParentObjectStore()
                     : parent);
+                ec.lock();
+                try {
+                    ec.setOptions(true, true, true);
+                }
+                finally {
+                    ec.unlock();
+                }
+                return ec;
             }
         }._newEditingContext();
 //        _ec.setDelegate(new QueueDelegate());

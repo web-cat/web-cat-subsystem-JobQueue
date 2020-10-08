@@ -1,5 +1,5 @@
 /*==========================================================================*\
- |  Copyright (C) 2009-2018 Virginia Tech
+ |  Copyright (C) 2009-2021 Virginia Tech
  |
  |  This file is part of Web-CAT.
  |
@@ -24,11 +24,13 @@ import java.io.StringWriter;
 import org.apache.log4j.Logger;
 import org.jfree.util.Log;
 import org.webcat.core.Application;
+import org.webcat.woextensions.ECAction;
 import org.webcat.woextensions.WCEC;
 import org.webcat.woextensions.WCFetchSpecification;
 import com.webobjects.eoaccess.EOGeneralAdaptorException;
 import com.webobjects.eoaccess.EOUtilities;
 import com.webobjects.eocontrol.EOEditingContext;
+import com.webobjects.eocontrol.EOEnterpriseObject;
 import com.webobjects.eocontrol.EOFetchSpecification;
 import com.webobjects.foundation.NSArray;
 import er.extensions.eof.ERXQ;
@@ -58,14 +60,15 @@ public abstract class WorkerThread<Job extends JobBase>
      */
     public WorkerThread(String queueEntity)
     {
+        entity = queueEntity;
         setName(this.getClass().getSimpleName() + "-" + getId());
-        EOEditingContext myec = localContext();
-        descriptor = new ManagedWorkerDescriptor(
-            WorkerDescriptor.registerWorker(
-                myec,
-                HostDescriptor.currentHost(myec),
-                QueueDescriptor.descriptorFor(myec, queueEntity),
-                this));
+//        WCEC myec = localContext();
+//        descriptor = new ManagedWorkerDescriptor(
+//            WorkerDescriptor.registerWorker(
+//                myec,
+//                HostDescriptor.currentHost(myec),
+//                QueueDescriptor.descriptorFor(myec, queueEntity),
+//                this));
     }
 
 
@@ -74,11 +77,12 @@ public abstract class WorkerThread<Job extends JobBase>
      * Access the queue descriptor for this worker's job queue.
      * @return The queue descriptor
      */
-    public ManagedQueueDescriptor queueDescriptor()
+    public ManagedQueueDescriptor queueDescriptor(EOEditingContext ec)
     {
         if (queueDescriptor == null)
         {
-            queueDescriptor = new ManagedQueueDescriptor(descriptor.queue());
+            queueDescriptor =
+                new ManagedQueueDescriptor(descriptor(ec).queue());
         }
         return queueDescriptor;
     }
@@ -89,11 +93,11 @@ public abstract class WorkerThread<Job extends JobBase>
      * Access the host descriptor for this worker's host.
      * @return The host descriptor
      */
-    public ManagedHostDescriptor hostDescriptor()
+    public ManagedHostDescriptor hostDescriptor(EOEditingContext ec)
     {
         if (hostDescriptor == null)
         {
-            hostDescriptor = new ManagedHostDescriptor(descriptor.host());
+            hostDescriptor = new ManagedHostDescriptor(descriptor(ec).host());
         }
         return hostDescriptor;
     }
@@ -104,9 +108,18 @@ public abstract class WorkerThread<Job extends JobBase>
      * Access the descriptor for this worker.
      * @return The worker descriptor
      */
-    public ManagedWorkerDescriptor descriptor()
+    public ManagedWorkerDescriptor descriptor(EOEditingContext ec)
     {
-        return descriptor;
+        if (managedDescriptor == null)
+        {
+            descriptor = WorkerDescriptor.registerWorker(
+                ec,
+                HostDescriptor.currentHost(ec),
+                QueueDescriptor.descriptorFor(ec, entity),
+                this);
+            managedDescriptor = new ManagedWorkerDescriptor(descriptor);
+        }
+        return managedDescriptor;
     }
 
 
@@ -122,41 +135,51 @@ public abstract class WorkerThread<Job extends JobBase>
         // Make sure application is fully initialized before running.
         Application.waitForInitializationToComplete();
 
-        logDebug("started");
+        boolean starting = true;
 
         while (true)
         {
+            WCEC ec = WCEC.factoryWithToolOSC()._newEditingContext();
             try
             {
-                killCancelledJobs();
-                waitForAvailableJob();
+                ec.lock();
+                if (starting)
+                {
+                    // have to put this down here, since it needs to be
+                    // inside EC locking section
+                    logDebug(ec, "started");
+                    starting = false;
+                }
+
+                killCancelledJobs(ec);
+                waitForAvailableJob(ec);
 
                 long jobStartTime = System.currentTimeMillis();
                 boolean jobFailed = false;
 
                 try
                 {
-                    processJob();
+                    processJob(ec);
                 }
                 catch (Exception e)
                 {
-                    localContext().revert();
+                    ec.revert();
                     jobFailed = true;
 
                     currentJob.setIsReady(false);
                     currentJob.setWorkerRelationship(null);
 
-                    resetJob();
+                    resetJob(ec);
                     sendJobSuspensionNotification(e);
 
                     currentJob = null;
-                    // TODO check for optimistic locking failures?
-                    localContext().saveChanges();
+
+                    ec.saveChanges();
                 }
 
-                // If the job set its own state back to not-ready, consider
-                // it as failed so that we don't delete it and can come back
-                // to it later.
+                // If the job set its own state back to not-ready,
+                // consider it as failed so that we don't delete it and
+                // can come back to it later.
                 if (currentJob != null && !currentJob.isReady())
                 {
                     jobFailed = true;
@@ -164,8 +187,7 @@ public abstract class WorkerThread<Job extends JobBase>
                     currentJob.setWorkerRelationship(null);
                     currentJob = null;
 
-                    // TODO check for optimistic locking failures?
-                    localContext().saveChanges();
+                    ec.saveChanges();
                 }
 
                 if (!jobFailed)
@@ -178,13 +200,13 @@ public abstract class WorkerThread<Job extends JobBase>
 
                     try
                     {
-                        localContext().saveChanges();
+                        ec.saveChanges();
                         currentJob = null;
 
                         // Update the wait statistics.
                         if (!wasCancelled)
                         {
-                            queueDescriptor().addCompletedJobStats(
+                            queueDescriptor(ec).addCompletedJobStats(
                                 jobDuration, jobWait);
                         }
                     }
@@ -192,15 +214,11 @@ public abstract class WorkerThread<Job extends JobBase>
                     {
                         Number jobId = currentJob.id();
 
-                        // Refresh the editing context.
-                        renewContext();
-
-                        // Get a local instance of the job with the same id.
-
+                        // Get a local instance of the job with that id
                         NSArray<Job> results =
                             EOUtilities.objectsMatchingKeyAndValue(
-                                localContext(),
-                                queueDescriptor().jobEntityName(),
+                                ec,
+                                queueDescriptor(ec).jobEntityName(),
                                 "id", jobId.intValue());
 
                         if (results != null && results.count() > 0)
@@ -217,9 +235,16 @@ public abstract class WorkerThread<Job extends JobBase>
             catch (Exception e)
             {
                 // FIXME what should we do here?
-                log.error("Exception in worker thread:", e);
-                renewContext();
+                log.fatal("Exception in worker thread:", e);
             }
+            finally
+            {
+                ec.unlock();
+                ec.dispose();
+            }
+
+            // Clear out fields for next round
+            resetForNextJob();
         }
     }
 
@@ -238,7 +263,7 @@ public abstract class WorkerThread<Job extends JobBase>
      *
      * @throws Exception if an exception occurred
      */
-    protected abstract void processJob() throws Exception;
+    protected abstract void processJob(EOEditingContext ec) throws Exception;
 
 
     // ----------------------------------------------------------
@@ -247,7 +272,7 @@ public abstract class WorkerThread<Job extends JobBase>
      * Subclasses can override this method to perform any additional
      * modification of specific job attributes.
      */
-    protected void resetJob()
+    protected void resetJob(EOEditingContext ec)
     {
         // Default implementation does nothing.
     }
@@ -264,7 +289,7 @@ public abstract class WorkerThread<Job extends JobBase>
      * Subclasses that override this method should always call the super
      * method first.
      */
-    protected synchronized void cancelJob()
+    protected synchronized void cancelJob(EOEditingContext ec)
     {
         isCancelled = true;
     }
@@ -279,13 +304,13 @@ public abstract class WorkerThread<Job extends JobBase>
      * @return true if the thread should cancel itself at the earliest
      *     opportunity, otherwise false
      */
-    protected synchronized boolean isCancelling()
+    protected synchronized boolean isCancelling(EOEditingContext ec)
     {
-        if (currentJob.isCancelled())
+        if (currentJob(ec).isCancelled())
         {
             if (!isCancelled)
             {
-                cancelJob();
+                cancelJob(ec);
             }
 
             return true;
@@ -302,9 +327,27 @@ public abstract class WorkerThread<Job extends JobBase>
      * Access the current job that this thread is working on.
      * @return The current job, or null if there is none
      */
-    protected Job currentJob()
+    protected Job currentJob(EOEditingContext ec)
     {
+        if (currentJob != null && ec != currentJob.wcEditingContext())
+        {
+            throw new IllegalStateException("Job " + currentJob + " has EC "
+                + currentJob.wcEditingContext() + " when expecting " + ec,
+                new Exception("currentJob() called from here"));
+        }
         return currentJob;
+    }
+
+
+    // ----------------------------------------------------------
+    private void resetForNextJob()
+    {
+        currentJob = null;
+        queueDescriptor = null;
+        hostDescriptor = null;
+        managedDescriptor = null;
+        descriptor = null;
+        isCancelled = false;
     }
 
 
@@ -313,29 +356,29 @@ public abstract class WorkerThread<Job extends JobBase>
      * Access this worker's local editing context.
      * @return The editing context
      */
-    protected EOEditingContext localContext()
-    {
-        if (ec == null)
-        {
-            ec = WCEC.newAutoLockingEditingContext();
-            if (queueDescriptor != null)
-            {
-                queueDescriptor = new ManagedQueueDescriptor(
-                    (QueueDescriptor)queueDescriptor.localInstanceIn(ec));
-            }
-            if (hostDescriptor != null)
-            {
-                hostDescriptor = new ManagedHostDescriptor(
-                    (HostDescriptor)hostDescriptor.localInstanceIn(ec));
-            }
-            if (descriptor != null)
-            {
-                descriptor = new ManagedWorkerDescriptor(
-                    (WorkerDescriptor)descriptor.localInstanceIn(ec));
-            }
-        }
-        return ec;
-    }
+//    protected WCEC localContext()
+//    {
+//        if (ec == null)
+//        {
+//            ec = WCEC.newAutoLockingEditingContext();
+//            if (queueDescriptor != null)
+//            {
+//                queueDescriptor = new ManagedQueueDescriptor(
+//                    (QueueDescriptor)queueDescriptor.localInstanceIn(ec));
+//            }
+//            if (hostDescriptor != null)
+//            {
+//                hostDescriptor = new ManagedHostDescriptor(
+//                    (HostDescriptor)hostDescriptor.localInstanceIn(ec));
+//            }
+//            if (descriptor != null)
+//            {
+//                descriptor = new ManagedWorkerDescriptor(
+//                    (WorkerDescriptor)descriptor.localInstanceIn(ec));
+//            }
+//        }
+//        return ec;
+//    }
 
 
     // ----------------------------------------------------------
@@ -343,15 +386,15 @@ public abstract class WorkerThread<Job extends JobBase>
      * Unlocks the thread's local editing context, recycles it, and then
      * relocks it.
      */
-    protected void renewContext()
-    {
-        // Unlock and release the current editing context
-        ec.dispose();
-        ec = null;
-
-        // Generate a fresh editing context, which will auto-lock on demand
-        localContext();
-    }
+//    protected void renewContext()
+//    {
+//        // Unlock and release the current editing context
+//        ec.dispose();
+//        ec = null;
+//
+//        // Generate a fresh editing context, which will auto-lock on demand
+//        localContext();
+//    }
 
 
     // ----------------------------------------------------------
@@ -415,7 +458,7 @@ public abstract class WorkerThread<Job extends JobBase>
      * ownership of it. This method will not return until it successfully does
      * this, at which point the currentJob field will be set to that job.
      */
-    protected void waitForAvailableJob()
+    protected void waitForAvailableJob(EOEditingContext ec)
     {
         boolean didGetJob = false;
 
@@ -430,22 +473,22 @@ public abstract class WorkerThread<Job extends JobBase>
             // A candidate will have a null worker relationship, meaning
             // nobody else successfully owns it yet.
 
-            Job candidate = fetchNextCandidateJob();
+            Job candidate = fetchNextCandidateJob(ec);
 
             if (candidate == null)
             {
                 // If there aren't any jobs currently available, wait
                 // until something arrives in the queue
-                logDebug("waiting for queue to wake me");
+                logDebug(ec, "waiting for queue to wake me");
                 try
                 {
-                    queueDescriptor().waitForNextJob();
+                    queueDescriptor(ec).waitForNextJob();
                 }
                 catch (Exception e)
                 {
                     // If this blows up, just repeat the loop and try again
                 }
-                logDebug("woken by the queue");
+                logDebug(ec, "woken by the queue");
             }
             else
             {
@@ -456,15 +499,21 @@ public abstract class WorkerThread<Job extends JobBase>
                 // first, so we go back to the top of the loop and try to get
                 // another job.
 
-                WorkerDescriptor worker = (WorkerDescriptor)
-                    descriptor().localInstanceIn(localContext());
+                if (descriptor == null)
+                {
+                    // force it to be evaluated
+                    descriptor(ec);
+                }
+                WorkerDescriptor worker = descriptor;
+                ec.refreshObject(worker);
 
-                logDebug("volunteering to run job " + candidate.id());
+                logDebug(ec, "volunteering to run job " + candidate.id());
                 didGetJob = candidate.volunteerToRun(worker);
 
                 if (didGetJob)
                 {
-                    logDebug("successfully acquired job " + candidate.id());
+                    logDebug(
+                        ec, "successfully acquired job " + candidate.id());
                     currentJob = candidate;
                 }
             }
@@ -480,11 +529,9 @@ public abstract class WorkerThread<Job extends JobBase>
      * @return a job that doesn't currently have any worker threads owning it
      */
     @SuppressWarnings("unchecked")
-    protected Job fetchNextCandidateJob()
+    protected Job fetchNextCandidateJob(EOEditingContext ec)
     {
-        EOEditingContext context = localContext();
-
-        String entityName = queueDescriptor().jobEntityName();
+        String entityName = queueDescriptor(ec).jobEntityName();
 
         EOFetchSpecification fetchSpec = new WCFetchSpecification<Job>(
             entityName,
@@ -495,7 +542,7 @@ public abstract class WorkerThread<Job extends JobBase>
             ERXS.sortOrders(JobBase.ENQUEUE_TIME_KEY, ERXS.ASC));
         fetchSpec.setFetchLimit(1);
 
-        NSArray<Job> jobs = context.objectsWithFetchSpecification(fetchSpec);
+        NSArray<Job> jobs = ec.objectsWithFetchSpecification(fetchSpec);
 
         if (jobs.count() == 0)
         {
@@ -514,9 +561,9 @@ public abstract class WorkerThread<Job extends JobBase>
     /**
      * Fetches cancelled jobs from the queue and deletes them.
      */
-    private void killCancelledJobs()
+    private void killCancelledJobs(EOEditingContext ec)
     {
-        Job cancelledJob = fetchNextCancelledJob();
+        Job cancelledJob = fetchNextCancelledJob(ec);
 
         while (cancelledJob != null)
         {
@@ -528,14 +575,14 @@ public abstract class WorkerThread<Job extends JobBase>
 
             try
             {
-                localContext().saveChanges();
+                ec.saveChanges();
             }
             catch (Exception e)
             {
-                localContext().revert();
+                ec.revert();
             }
 
-            cancelledJob = fetchNextCancelledJob();
+            cancelledJob = fetchNextCancelledJob(ec);
         }
     }
 
@@ -547,9 +594,9 @@ public abstract class WorkerThread<Job extends JobBase>
      * @return an array of cancelled jobs
      */
     @SuppressWarnings("unchecked")
-    private Job fetchNextCancelledJob()
+    private Job fetchNextCancelledJob(EOEditingContext ec)
     {
-        String entityName = queueDescriptor().jobEntityName();
+        String entityName = queueDescriptor(ec).jobEntityName();
         EOFetchSpecification fetchSpec = new EOFetchSpecification(
                 entityName,
                 ERXQ.and(
@@ -558,8 +605,7 @@ public abstract class WorkerThread<Job extends JobBase>
                 ERXS.sortOrders(JobBase.ENQUEUE_TIME_KEY, ERXS.ASC));
         fetchSpec.setFetchLimit(1);
 
-        NSArray<Job> jobs =
-            localContext().objectsWithFetchSpecification(fetchSpec);
+        NSArray<Job> jobs = ec.objectsWithFetchSpecification(fetchSpec);
 
         if (jobs.count() == 0)
         {
@@ -573,31 +619,24 @@ public abstract class WorkerThread<Job extends JobBase>
 
 
     // ----------------------------------------------------------
-    private void logDebug(Object obj)
+    private void logDebug(EOEditingContext ec, Object obj)
     {
         if (log.isDebugEnabled())
         {
-            if (ec != null)
-            {
-                ec.lock();
-            }
-            log.debug(queueDescriptor().jobEntityName()
+            log.debug(queueDescriptor(ec).jobEntityName()
                 + " worker thread " + getId() + ": " + obj);
-            if (ec != null)
-            {
-                ec.unlock();
-            }
         }
     }
 
 
     //~ Instance/static variables .............................................
 
+    private final String            entity;
     private Job                     currentJob;
     private ManagedQueueDescriptor  queueDescriptor;
     private ManagedHostDescriptor   hostDescriptor;
-    private ManagedWorkerDescriptor descriptor;
-    private EOEditingContext        ec;
+    private ManagedWorkerDescriptor managedDescriptor;
+    private WorkerDescriptor        descriptor;
     private boolean                 isCancelled;
 
     private static final Logger log = Logger.getLogger(WorkerThread.class);

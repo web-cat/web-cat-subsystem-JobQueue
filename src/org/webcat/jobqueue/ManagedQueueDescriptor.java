@@ -27,7 +27,7 @@ import er.extensions.eof.ERXKey;
 
 import java.util.Enumeration;
 import org.apache.log4j.Logger;
-import org.webcat.core.IndependentEOManager;
+import org.webcat.woextensions.IndependentEOManager;
 
 // -------------------------------------------------------------------------
 /**

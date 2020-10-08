@@ -1,5 +1,5 @@
 /*==========================================================================*\
- |  Copyright (C) 2008-2018 Virginia Tech
+ |  Copyright (C) 2008-2021 Virginia Tech
  |
  |  This file is part of Web-CAT.
  |
@@ -35,7 +35,6 @@ import org.webcat.core.messaging.UnexpectedExceptionMessage;
 import org.webcat.dbupdate.*;
 import org.webcat.woextensions.ECAction;
 import static org.webcat.woextensions.ECAction.run;
-import org.webcat.woextensions.WCEC;
 
 //-------------------------------------------------------------------------
 /**
@@ -395,22 +394,14 @@ public class JobQueue
      *        when creating the descriptor, if one does not already exist.
      */
     public static void registerDescriptor(
-        String                  descriptorEntityName,
-        NSDictionary<String, ?> searchBindings,
-        NSDictionary<String, ?> initializationBindings)
+        final String                  descriptorEntityName,
+        final NSDictionary<String, ?> searchBindings,
+        final NSDictionary<String, ?> initializationBindings)
     {
-        EOEditingContext ec = WCEC.newEditingContext();
-        try
-        {
-            ec.lock();
+        new ECAction() { public void action() {
             registerDescriptor(ec, descriptorEntityName, searchBindings,
                 initializationBindings);
-        }
-        finally
-        {
-            ec.unlock();
-            ec.dispose();
-        }
+        }}.run();
     }
 
 

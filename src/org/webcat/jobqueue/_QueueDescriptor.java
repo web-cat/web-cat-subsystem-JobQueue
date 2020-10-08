@@ -135,6 +135,21 @@ public abstract class _QueueDescriptor
      * @return The object, or null if no such id exists
      */
     public static QueueDescriptor forId(
+        EOEditingContext ec, EOGlobalID id)
+    {
+        return (QueueDescriptor)ec.faultForGlobalID(id, ec);
+    }
+
+
+    // ----------------------------------------------------------
+    /**
+     * Look up an object by id number.  Assumes the editing
+     * context is appropriately locked.
+     * @param ec The editing context to use
+     * @param id The id to look up
+     * @return The object, or null if no such id exists
+     */
+    public static QueueDescriptor forId(
         EOEditingContext ec, String id)
     {
         return forId(ec, er.extensions.foundation.ERXValueUtilities.intValue(id));
@@ -198,6 +213,19 @@ public abstract class _QueueDescriptor
 
     // ----------------------------------------------------------
     /**
+     * Refetch this object from the database.
+     * @param editingContext The target editing context
+     * @return An instance of this object in the target editing context
+     */
+    public QueueDescriptor refetch(EOEditingContext editingContext)
+    {
+        return (QueueDescriptor)refetchObjectFromDBinEditingContext(
+            editingContext);
+    }
+
+
+    // ----------------------------------------------------------
+    /**
      * Get a list of changes between this object's current state and the
      * last committed version.
      * @return a dictionary of the changes that have not yet been committed
@@ -227,6 +255,7 @@ public abstract class _QueueDescriptor
             return er.extensions.eof.ERXConstant.ZeroInteger;
         }
     }
+
 
     // ----------------------------------------------------------
     /**
@@ -714,7 +743,8 @@ public abstract class _QueueDescriptor
     @SuppressWarnings("unchecked")
     public NSArray<org.webcat.jobqueue.WorkerDescriptor> workers()
     {
-        return (NSArray)storedValueForKey( "workers" );
+        return (NSArray<org.webcat.jobqueue.WorkerDescriptor>)
+            storedValueForKey("workers");
     }
 
 
@@ -725,14 +755,15 @@ public abstract class _QueueDescriptor
      *
      * @param value The new set of entities to relate to
      */
-    public void setWorkers( NSMutableArray<org.webcat.jobqueue.WorkerDescriptor>  value )
+    public void setWorkers(
+        NSMutableArray<org.webcat.jobqueue.WorkerDescriptor>  value)
     {
         if (log.isDebugEnabled())
         {
-            log.debug( "setWorkers("
-                + value + "): was " + workers() );
+            log.debug("setWorkers("
+                + value + "): was " + workers());
         }
-        takeStoredValueForKey( value, "workers" );
+        takeStoredValueForKey(value, "workers");
     }
 
 
@@ -948,10 +979,11 @@ public abstract class _QueueDescriptor
         EOQualifier qualifier,
         NSArray<EOSortOrdering> sortOrderings)
     {
-        @SuppressWarnings("unchecked")
-        EOFetchSpecification fspec = new WCFetchSpecification(
+        WCFetchSpecification<QueueDescriptor> fspec =
+            new WCFetchSpecification<QueueDescriptor>(
                 ENTITY_NAME, qualifier, sortOrderings);
         fspec.setUsesDistinct(true);
+        fspec.setRefreshesRefetchedObjects(true);
         return objectsWithFetchSpecification(context, fspec);
     }
 
@@ -972,8 +1004,14 @@ public abstract class _QueueDescriptor
         EOQualifier qualifier,
         NSArray<EOSortOrdering> sortOrderings)
     {
+        WCFetchSpecification<QueueDescriptor> fspec =
+            new WCFetchSpecification<QueueDescriptor>(
+                ENTITY_NAME, qualifier, sortOrderings);
+        fspec.setUsesDistinct(true);
+        fspec.setRefreshesRefetchedObjects(true);
+        fspec.setFetchLimit(1);
         NSArray<QueueDescriptor> objects =
-            objectsMatchingQualifier(context, qualifier, sortOrderings);
+            objectsWithFetchSpecification(context, fspec);
         return (objects.size() > 0)
             ? objects.get(0)
             : null;
@@ -1065,7 +1103,7 @@ public abstract class _QueueDescriptor
                     + java.util.Arrays.toString(keysAndValues));
             }
 
-            valueDictionary.setObjectForKey(value, key);
+            valueDictionary.setObjectForKey(value, (String)key);
         }
 
         return objectsMatchingValues(context, valueDictionary);
@@ -1137,7 +1175,7 @@ public abstract class _QueueDescriptor
                     + java.util.Arrays.toString(keysAndValues));
             }
 
-            valueDictionary.setObjectForKey(value, key);
+            valueDictionary.setObjectForKey(value, (String)key);
         }
 
         return firstObjectMatchingValues(
@@ -1161,11 +1199,13 @@ public abstract class _QueueDescriptor
         NSArray<EOSortOrdering> sortOrderings,
         NSDictionary<String, Object> keysAndValues)
     {
-        @SuppressWarnings("unchecked")
-        EOFetchSpecification fspec = new WCFetchSpecification(
+        WCFetchSpecification<QueueDescriptor> fspec =
+            new WCFetchSpecification<QueueDescriptor>(
                 ENTITY_NAME,
                 EOQualifier.qualifierToMatchAllValues(keysAndValues),
                 sortOrderings);
+        fspec.setUsesDistinct(true);
+        fspec.setRefreshesRefetchedObjects(true);
         fspec.setFetchLimit(1);
 
         NSArray<QueueDescriptor> objects =
@@ -1228,7 +1268,7 @@ public abstract class _QueueDescriptor
                     + java.util.Arrays.toString(keysAndValues));
             }
 
-            valueDictionary.setObjectForKey(value, key);
+            valueDictionary.setObjectForKey(value, (String)key);
         }
 
         return uniqueObjectMatchingValues(context, valueDictionary);
@@ -1338,7 +1378,7 @@ public abstract class _QueueDescriptor
                     + java.util.Arrays.toString(keysAndValues));
             }
 
-            valueDictionary.setObjectForKey(value, key);
+            valueDictionary.setObjectForKey(value, (String)key);
         }
 
         return countOfObjectsMatchingValues(context, valueDictionary);
@@ -1415,6 +1455,33 @@ public abstract class _QueueDescriptor
     public String toString()
     {
         return userPresentableDescription();
+    }
+
+
+    // ----------------------------------------------------------
+    /**
+     * Hack to workaround bugs in ERXEOAccessUtilities.reapplyChanges().
+     *
+     * @param value the new value of the key
+     * @param key the key to access
+     */
+    public void takeValueForKey(Object value, String key)
+    {
+        // if (ERXValueUtilities.isNull(value))
+        if (value == NSKeyValueCoding.NullValue
+            || value instanceof NSKeyValueCoding.Null)
+        {
+            value = null;
+        }
+
+        if (value instanceof NSData)
+        {
+            super.takeStoredValueForKey(value, key);
+        }
+        else
+        {
+            super.takeValueForKey(value, key);
+        }
     }
 
 

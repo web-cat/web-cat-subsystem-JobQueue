@@ -24,7 +24,7 @@ import com.webobjects.eocontrol.*;
 import com.webobjects.foundation.*;
 import java.util.Enumeration;
 import org.apache.log4j.Logger;
-import org.webcat.core.IndependentEOManager;
+import org.webcat.woextensions.IndependentEOManager;
 
 // -------------------------------------------------------------------------
 /**
